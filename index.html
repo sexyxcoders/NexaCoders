@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Encode • Decode — Cyber Blue</title>
+<meta name="description" content="Client-side encoder/decoder (Base64, URL, Hex, ROT13, UTF-8). Cyber-blue neon UI. Share links with encoded payload in the URL hash."/>
+<style>
+  /* ---------- Layout & base ---------- */
+  :root{
+    --bg-1:#071022;
+    --bg-2:#08142a;
+    --card:#071428;
+    --neon-1:#0ea5e9;
+    --neon-2:#3b82f6;
+    --accent:#38bdf8;
+    --muted:#9fcbe6;
+    --glass: rgba(255,255,255,0.03);
+  }
+  html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+  body{
+    background: radial-gradient(1200px 600px at 10% 10%, rgba(14,165,233,0.05), transparent 6%),
+                radial-gradient(800px 400px at 90% 90%, rgba(59,130,246,0.04), transparent 8%),
+                linear-gradient(180deg,var(--bg-1),var(--bg-2));
+    color: #cdefff;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    min-height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:28px;
+    overflow:hidden;
+  }
+
+  /* animated cyber grid */
+  .cyber-grid{
+    position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      linear-gradient(transparent 1px, rgba(14,165,233,0.03) 1px),
+      linear-gradient(90deg, transparent 1px, rgba(14,165,233,0.03) 1px);
+    background-size: 72px 72px;
+    filter: blur(10px) saturate(110%);
+    opacity:0.8;
+    animation: gridMove 40s linear infinite;
+  }
+  @keyframes gridMove{ 0%{transform:translate3d(0,0,0)} 100%{transform:translate3d(400px,600px,0)} }
+
+  /* container */
+  .wrap{position:relative;z-index:10; width:100%; max-width:1080px; padding:26px; box-sizing:border-box;}
+  .header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+  h1{margin:0;font-size:20px;letter-spacing:0.5px;color:var(--accent)}
+  .sub{color:var(--muted);font-size:13px;margin-top:4px}
+
+  /* cards with neon border */
+  .card{
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:16px;
+    padding:16px;
+    box-shadow: 0 6px 30px rgba(3,7,18,0.6);
+    border:1px solid rgba(255,255,255,0.03);
+    position:relative;
+    overflow:visible;
+  }
+  /* neon border pseudo element - uses background gradient and masking */
+  .neon-border{
+    --pad:2px;
+    position:relative;
+  }
+  .neon-border::before{
+    content:"";
+    position:absolute;
+    inset: calc(-1 * var(--pad));
+    border-radius:inherit;
+    padding:var(--pad);
+    background: conic-gradient(from 90deg, var(--neon-1), var(--neon-2), var(--accent), var(--neon-1));
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    filter: blur(8px) saturate(140%);
+    opacity:0.85;
+    animation: hue 6s linear infinite;
+    pointer-events:none;
+  }
+  @keyframes hue{0%{filter:hue-rotate(0deg) blur(6px);}100%{filter:hue-rotate(360deg) blur(6px);}}
+
+  /* layout grid */
+  .grid{display:grid;grid-template-columns: 320px 1fr; gap:18px;}
+  @media (max-width:880px){ .grid{grid-template-columns:1fr} .left-hide{display:none} }
+
+  /* sidebar */
+  .sidebar .methods{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  .method-btn{
+    background:transparent;border:1px solid rgba(255,255,255,0.03);
+    color:var(--muted);padding:10px;border-radius:12px;text-align:left;font-size:14px;cursor:pointer;
+    transition:all .18s;
+  }
+  .method-btn:hover{transform:translateY(-2px); box-shadow: 0 8px 18px rgba(11,72,110,0.12);}
+  .method-btn.active{background:linear-gradient(180deg, rgba(14,165,233,0.06), rgba(59,130,246,0.03)); color: #e9fbff; border-color: rgba(62,160,255,0.22);}
+
+  /* controls */
+  .controls{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap}
+  .select, .mode-btn{padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);color:var(--muted);cursor:pointer}
+  .mode-btn.active{background:linear-gradient(90deg, rgba(14,165,233,0.14), rgba(59,130,246,0.06)); color:var(--accent); border:1px solid rgba(59,130,246,0.18) }
+
+  /* editor */
+  .editor{display:flex;gap:12px}
+  textarea{flex:1;min-height:220px;resize:vertical;padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; color:#dff6ff; outline:none; caret-color:var(--accent); text-shadow:0 0 8px rgba(56,189,248,0.08);}
+  textarea:focus{box-shadow:0 0 18px rgba(59,130,246,0.14); border-color:rgba(14,165,233,0.3)}
+
+  /* neon button */
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);
+    cursor:pointer;background:linear-gradient(90deg, rgba(3,7,18,0.6), rgba(10,20,40,0.6)); color: #e6faff;font-weight:600;
+    transition:all .18s; position:relative; overflow:visible;
+  }
+  .neon-btn::after{
+    content:"";position:absolute;inset:-6px;border-radius:inherit;background:radial-gradient(circle at 20% 20%, rgba(56,189,248,0.12), transparent 40%); filter:blur(10px); opacity:0; transition:0.25s;
+  }
+  .neon-btn:hover::after{opacity:1; transform: translateZ(0);}
+
+  .btn.primary{background:linear-gradient(90deg,var(--neon-1),var(--neon-2));color:#021428; border:none; box-shadow: 0 8px 30px rgba(14,165,233,0.14);}
+
+  .small{font-size:13px;padding:7px 10px;border-radius:10px}
+
+  /* output actions */
+  .out-actions{display:flex;gap:8px;align-items:center;margin-top:10px}
+  .muted{color:var(--muted);font-size:13px}
+
+  /* badges/labels */
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);font-size:12px;color:var(--muted)}
+
+  /* hologram hover for cards */
+  .holo{transition:transform .18s ease, box-shadow .18s; transform-origin:center; will-change:transform}
+  .holo:hover{transform:translateY(-6px) scale(1.01); box-shadow: 0 14px 40px rgba(3,7,20,0.6), 0 0 40px rgba(14,165,233,0.08);}
+
+  /* toast */
+  .toast{position:fixed;right:24px;bottom:24px;background:rgba(2,20,36,0.9);padding:10px 14px;border-radius:10px;border:1px solid rgba(14,165,233,0.12);box-shadow:0 6px 30px rgba(3,7,18,0.7);color:#e6fbff;font-weight:600;z-index:1600;opacity:0;transform:translateY(8px);transition:all .22s}
+  .toast.show{opacity:1; transform:translateY(0);}
+
+  /* footer */
+  .footer{margin-top:12px;font-size:12px;color:var(--muted); text-align:center}
+
+</style>
+</head>
+<body>
+  <div class="cyber-grid" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="header">
+      <div>
+        <h1>Encode • Decode — Cyber Blue</h1>
+        <div class="sub">Base64, URL, Hex, ROT13, UTF-8 bytes — client-side transforms & share links</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <div class="pill">Client-side</div>
+        <button id="runTop" class="btn neon-btn small">Run</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <!-- SIDEBAR -->
+      <div class="left sidebar">
+        <div class="card neon-border holo">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:700;color:var(--accent)">Mode</div>
+            <div class="muted" id="selectedMethodLabel">Base64</div>
+          </div>
+
+          <div style="margin-top:10px;display:flex;gap:8px;">
+            <button id="modeEncode" class="mode-btn active">Encode</button>
+            <button id="modeDecode" class="mode-btn">Decode</button>
+          </div>
+
+          <div class="methods" aria-hidden="false">
+            <button class="method-btn active" data-method="base64"><strong>Base64</strong><div style="font-size:12px;color:var(--muted)">Unicode-safe Base64</div></button>
+            <button class="method-btn" data-method="url"><strong>URL</strong><div style="font-size:12px;color:var(--muted)">Percent encoding</div></button>
+            <button class="method-btn" data-method="hex"><strong>Hex</strong><div style="font-size:12px;color:var(--muted)">Hexadecimal bytes</div></button>
+            <button class="method-btn" data-method="rot13"><strong>ROT13</strong><div style="font-size:12px;color:var(--muted)">Simple substitution</div></button>
+            <button class="method-btn" data-method="utf8"><strong>UTF-8</strong><div style="font-size:12px;color:var(--muted)">Bytes view</div></button>
+          </div>
+
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button id="clearAll" class="btn small">Clear</button>
+            <button id="swapBtn" class="btn small">Swap</button>
+          </div>
+
+          <div style="margin-top:12px;color:var(--muted);font-size:13px">Tip: Use <strong>Share</strong> to copy a short URL that decodes automatically in the app.</div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card neon-border holo">
+          <div style="font-weight:700;color:var(--accent)">Privacy</div>
+          <div class="muted" style="margin-top:8px;font-size:13px">All transforms run in your browser. Links contain the encoded payload in the URL hash and never reach a server.</div>
+        </div>
+      </div>
+
+      <!-- MAIN -->
+      <div class="right">
+        <div class="card neon-border holo">
+          <div style="display:flex;gap:12px;align-items:start">
+            <div style="flex:1;min-width:0">
+              <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:8px">Input</label>
+              <textarea id="input" placeholder="Paste text or code here — Unicode supported"></textarea>
+            </div>
+
+            <div style="width:190px;flex-shrink:0;display:flex;flex-direction:column;gap:8px">
+              <div style="background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)">
+                <div style="font-size:13px;color:var(--muted)">Method</div>
+                <div id="methodBadge" style="font-weight:700;color:var(--accent);margin-top:6px">Base64</div>
+                <div style="font-size:12px;color:var(--muted);margin-top:6px" id="methodHint">Unicode-safe Base64</div>
+              </div>
+              <button id="runMain" class="btn primary neon-btn">Run</button>
+              <button id="insertExample" class="btn small">Insert example</button>
+            </div>
+          </div>
+
+          <div id="error" style="margin-top:10px;color:#ffb3c6;display:none"></div>
+
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="card neon-border holo">
+          <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:8px">Output</label>
+          <textarea id="output" readonly placeholder="Result appears here"></textarea>
+
+          <div class="out-actions" style="margin-top:12px">
+            <button id="copyOut" class="btn small">Copy</button>
+            <button id="downloadOut" class="btn small">Download</button>
+            <button id="shareOut" class="btn small">Share link</button>
+            <div style="flex:1"></div>
+            <div class="muted">Export: plain text</div>
+          </div>
+        </div>
+
+        <div class="footer">Made with ❤️ — fully client-side. Consider AES encryption for secret messages.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- simple toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ---------- Helpers (Unicode-safe) ---------- */
+function utf8ToBase64(str){
+  const enc = new TextEncoder();
+  const bytes = enc.encode(str);
+  let binary = '';
+  for(let i=0;i<bytes.length;i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+function base64ToUtf8(b64){
+  try{
+    const binary = atob(b64);
+    const bytes = new Uint8Array([...binary].map(c => c.charCodeAt(0)));
+    const dec = new TextDecoder();
+    return dec.decode(bytes);
+  }catch(e){
+    return null;
+  }
+}
+function encodeHex(str){
+  const enc = new TextEncoder(); const bytes = enc.encode(str);
+  return Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+function decodeHex(hex){
+  try{
+    const clean = hex.trim().replace(/\s+/g,'');
+    if(clean.length % 2) return null;
+    const parts = clean.match(/.{1,2}/g);
+    const bytes = new Uint8Array(parts.map(p => parseInt(p,16)));
+    const dec = new TextDecoder();
+    return dec.decode(bytes);
+  }catch(e){ return null; }
+}
+function rot13(str){ return str.replace(/[A-Za-z]/g, c => { const base = c <= 'Z' ? 65 : 97; return String.fromCharCode(((c.charCodeAt(0)-base+13)%26)+base); }) }
+
+/* url-safe base64 helpers */
+function toUrlSafeBase64(b64){ return b64.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
+function fromUrlSafeBase64(s){
+  if(!s) return null;
+  s = s.replace(/-/g,'+').replace(/_/g,'/');
+  while(s.length % 4) s += '=';
+  try{ return atob(s); } catch(e) { return null; }
+}
+
+/* ---------- UI elements ---------- */
+const inputEl = document.getElementById('input');
+const outputEl = document.getElementById('output');
+const runMain = document.getElementById('runMain');
+const runTop = document.getElementById('runTop');
+const copyOut = document.getElementById('copyOut');
+const downloadOut = document.getElementById('downloadOut');
+const shareOut = document.getElementById('shareOut');
+const toast = document.getElementById('toast');
+const errorEl = document.getElementById('error');
+const modeEncode = document.getElementById('modeEncode');
+const modeDecode = document.getElementById('modeDecode');
+const selectedMethodLabel = document.getElementById('selectedMethodLabel');
+const methodBadge = document.getElementById('methodBadge');
+const methodHint = document.getElementById('methodHint');
+const clearAll = document.getElementById('clearAll');
+const swapBtn = document.getElementById('swapBtn');
+const insertExample = document.getElementById('insertExample');
+
+let mode = 'encode';
+let method = 'base64';
+
+/* ---------- Methods metadata ---------- */
+const METHODS = {
+  base64:{label:'Base64', hint:'Unicode-safe Base64'},
+  url:{label:'URL', hint:'Percent-encoding'},
+  hex:{label:'Hex', hint:'Hexadecimal bytes'},
+  rot13:{label:'ROT13', hint:'Simple substitution cipher'},
+  utf8:{label:'UTF-8', hint:'Bytes view (space separated)'}
+};
+
+/* ---------- attach event to method buttons ---------- */
+document.querySelectorAll('.method-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.method-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    method = btn.getAttribute('data-method');
+    selectedMethodLabel.textContent = METHODS[method].label;
+    methodBadge.textContent = METHODS[method].label;
+    methodHint.textContent = METHODS[method].hint;
+  });
+});
+
+/* ---------- mode toggles ---------- */
+modeEncode.addEventListener('click', ()=>{ mode = 'encode'; modeEncode.classList.add('active'); modeDecode.classList.remove('active'); });
+modeDecode.addEventListener('click', ()=>{ mode = 'decode'; modeDecode.classList.add('active'); modeEncode.classList.remove('active'); });
+
+/* ---------- run logic ---------- */
+function showToast(msg, time=2200){
+  toast.textContent = msg; toast.classList.add('show');
+  setTimeout(()=>toast.classList.remove('show'), time);
+}
+function showError(msg){
+  errorEl.style.display = 'block'; errorEl.textContent = 'Error: ' + msg;
+  setTimeout(()=>{ errorEl.style.display='none'; }, 3000);
+}
+function runTransform(){
+  errorEl.style.display = 'none';
+  let inText = inputEl.value || '';
+  try{
+    let res = '';
+    if(method === 'base64'){
+      if(mode === 'encode') res = utf8ToBase64(inText);
+      else {
+        const dec = base64ToUtf8(inText.trim());
+        if(dec === null) throw new Error('Invalid Base64 input');
+        res = dec;
+      }
+    } else if(method === 'url'){
+      if(mode === 'encode') res = encodeURIComponent(inText);
+      else res = decodeURIComponent(inText);
+    } else if(method === 'hex'){
+      if(mode === 'encode') res = encodeHex(inText);
+      else {
+        const dec = decodeHex(inText);
+        if(dec === null) throw new Error('Invalid Hex input');
+        res = dec;
+      }
+    } else if(method === 'rot13'){
+      res = rot13(inText);
+    } else if(method === 'utf8'){
+      if(mode === 'encode'){
+        const enc = new TextEncoder(); res = Array.from(enc.encode(inText)).join(' ');
+      } else {
+        const parts = inText.trim().split(/\s+/).map(n=>Number(n));
+        if(parts.some(n=>Number.isNaN(n) || n<0 || n>255)) throw new Error('Invalid byte list');
+        const dec = new TextDecoder(); res = dec.decode(new Uint8Array(parts));
+      }
+    }
+    outputEl.value = res;
+    showToast('Done');
+  }catch(e){
+    showError(e.message || 'Error');
+    outputEl.value = '';
+  }
+}
+
+/* ---------- share helpers ---------- */
+function makeShareLink(payloadText){
+  // payloadText -> utf8 base64 -> url-safe base64 -> #msg=...
+  const b64 = utf8ToBase64(payloadText);
+  const safe = toUrlSafeBase64(b64);
+  return location.origin + location.pathname + '#msg=' + safe;
+}
+function readShareFromHash(){
+  const hash = location.hash.slice(1);
+  if(!hash) return null;
+  const params = new URLSearchParams(hash);
+  const v = params.get('msg');
+  if(!v) return null;
+  const raw = fromUrlSafeBase64(v); // atob result (binary)
+  if(!raw) return null;
+  // raw is binary string of base64-decoded bytes; but our fromUrlSafeBase64 returned atob of url-safe->base64
+  // Actually we encoded payload as utf8ToBase64(payload) then url-safe; reversing: fromUrlSafeBase64 -> returns base64-decoded binary:
+  // So to get original text, we must base64-decode raw using base64ToUtf8? Our fromUrlSafeBase64 currently returns atob(s) -> binary string.
+  // Simpler: instead of double-decoding confusion, use: fromUrlSafeBase64 -> returns atob(urlsafe->base64). That result is the original base64 bytes; 
+  // So we call base64ToUtf8 on that result:
+  const probable = base64ToUtf8(btoa(raw)) ? base64ToUtf8(btoa(raw)) : null;
+  // But simpler and robust: we stored url-safe of utf8ToBase64(payload). So fromUrlSafeBase64 should give the original base64 string via replacing and padding then returning that string (not atob).
+  // To keep consistency, we implement a safer read below (fallback).
+  // We'll instead try to reverse by reconstructing base64 from url-safe value and then base64ToUtf8:
+  const reconstructed = v.replace(/-/g,'+').replace(/_/g,'/');
+  let padded = reconstructed;
+  while(padded.length % 4) padded += '=';
+  try{
+    return base64ToUtf8(padded);
+  }catch(e){
+    return null;
+  }
+}
+
+/* ---------- button bindings ---------- */
+runMain.addEventListener('click', runTransform);
+runTop.addEventListener('click', runTransform);
+copyOut.addEventListener('click', async ()=> {
+  try{ await navigator.clipboard.writeText(outputEl.value || ''); showToast('Copied'); }
+  catch(e){ showError('Cannot copy'); }
+});
+downloadOut.addEventListener('click', ()=> {
+  const blob = new Blob([outputEl.value || ''], {type:'text/plain'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'output.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+});
+shareOut.addEventListener('click', async ()=> {
+  const payload = outputEl.value || inputEl.value || '';
+  if(!payload){ showError('Nothing to share'); return; }
+  const link = makeShareLink(payload);
+  try{ await navigator.clipboard.writeText(link); showToast('Share link copied'); }
+  catch(e){ showError('Could not copy link'); }
+});
+
+/* extra controls */
+clearAll.
