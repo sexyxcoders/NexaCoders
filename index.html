@@ -3,559 +3,335 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Encode • Decode — Cyber Blue/Green</title>
-<meta name="description" content="Client-side encoder/decoder (Base64, URL, Hex, ROT13, UTF-8). Cyber-blue neon UI. Share links with encoded payload in the URL hash."/>
+<title>Encode & Decode Tool</title>
+
 <style>
-  /* ---------- Theme Variables (Dark - Cyber Blue) ---------- */
-  :root {
-    --bg-1: #071022;
-    --bg-2: #08142a;
-    --card: #071428;
-    --neon-1: #0ea5e9; /* Sky Blue */
-    --neon-2: #3b82f6; /* Blue */
-    --accent: #38bdf8;
-    --muted: #9fcbe6;
-    --text: #cdefff;
-    --shadow-color: rgba(14, 165, 233, 0.08);
-    --border-color: rgba(255, 255, 255, 0.03);
-    --glass: rgba(255, 255, 255, 0.03);
-    --btn-primary-text: #021428;
-    --theme-text: "Dark Theme";
-  }
+/* ------------------ BASE ------------------ */
+body {
+  margin: 0;
+  font-family: Inter, system-ui, sans-serif;
+  background: #f5f7fa;
+  color: #111;
+}
 
-  /* ---------- Theme Variables (Light - Hacker Green) ---------- */
-  .theme-light {
-    --bg-1: #eef2f4;
-    --bg-2: #f8fafc;
-    --card: #ffffff;
-    --neon-1: #10b981; /* Emerald Green */
-    --neon-2: #059669; /* Darker Green */
-    --accent: #10b981;
-    --muted: #6b7280;
-    --text: #1f2937;
-    --shadow-color: rgba(16, 185, 129, 0.1);
-    --border-color: rgba(0, 0, 0, 0.1);
-    --glass: rgba(0, 0, 0, 0.03);
-    --btn-primary-text: #ffffff;
-    --theme-text: "Light Theme";
-  }
+header {
+  background: #1a73e8;
+  padding: 16px 20px;
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+  text-align: center;
+}
 
-  /* ---------- Base & Body ---------- */
-  html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
-  body {
-    background: radial-gradient(1200px 600px at 10% 10%, var(--neon-1, rgba(14,165,233,0.05)), transparent 6%),
-                radial-gradient(800px 400px at 90% 90%, var(--neon-2, rgba(59,130,246,0.04)), transparent 8%),
-                linear-gradient(180deg, var(--bg-1), var(--bg-2));
-    color: var(--text);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    min-height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px;
-    overflow-x: hidden;
-    box-sizing: border-box;
-  }
-  
-  /* animated cyber grid */
-  .cyber-grid{
-    position:fixed; inset:0; pointer-events:none; z-index:0;
-    background-image:
-      linear-gradient(transparent 1px, var(--neon-1, rgba(14,165,233,0.03)) 1px),
-      linear-gradient(90deg, transparent 1px, var(--neon-1, rgba(14,165,233,0.03)) 1px);
-    background-size: 72px 72px;
-    filter: blur(10px) saturate(110%);
-    opacity:0.8;
-    animation: gridMove 40s linear infinite;
-  }
-  @keyframes gridMove{ 0%{transform:translate3d(0,0,0)} 100%{transform:translate3d(400px,600px,0)} }
+/* ------------------ WRAPPER ------------------ */
+.container {
+  padding: 16px;
+  padding-bottom: 120px;
+}
 
-  /* container */
-  .wrap{position:relative;z-index:10; width:100%; max-width:1080px; padding:0; box-sizing:border-box;}
-  .header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
-  h1{margin:0;font-size:20px;letter-spacing:0.5px;color:var(--accent)}
-  .sub{color:var(--muted);font-size:13px;margin-top:4px}
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.08);
+  margin-bottom: 16px;
+}
 
-  /* cards with neon border */
-  .card{
-    background: linear-gradient(180deg, var(--glass), rgba(255,255,255,0.01));
-    border-radius:16px;
-    padding:16px;
-    box-shadow: 0 6px 30px rgba(3,7,18,0.1); /* Lighter shadow for light theme compatibility */
-    border:1px solid var(--border-color);
-    position:relative;
-    overflow:visible;
-  }
-  .neon-border::before{
-    content:""; position:absolute; inset: -2px; border-radius:inherit; padding:2px;
-    background: conic-gradient(from 90deg, var(--neon-1), var(--neon-2), var(--accent), var(--neon-1));
-    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor; mask-composite: exclude;
-    filter: blur(8px) saturate(140%); opacity:0.85;
-    animation: hue 6s linear infinite; pointer-events:none;
-  }
+/* ------------------ MODE SWITCH ------------------ */
+.mode-switch {
+  display: flex;
+  gap: 10px;
+}
 
-  /* layout grid */
-  .grid{display:grid;grid-template-columns: 320px 1fr; gap:18px;}
-  
-  /* Mobile Layout */
-  @media (max-width:880px){ 
-    .grid{grid-template-columns:1fr; gap:12px} 
-    .left-hide{display:none} 
-    h1{font-size:18px;}
-    .header{margin-bottom:12px;}
-  }
+.mode-btn {
+  flex: 1;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #d0d7de;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
 
-  /* sidebar */
-  .sidebar .methods{display:flex;flex-direction:column;gap:8px;margin-top:10px}
-  .method-btn{
-    background:transparent;border:1px solid var(--border-color);
-    color:var(--muted);padding:10px;border-radius:12px;text-align:left;font-size:14px;cursor:pointer;
-    transition:all .18s;
-  }
-  .method-btn:hover{transform:translateY(-2px); box-shadow: 0 8px 18px var(--shadow-color);}
-  .method-btn.active{
-    background:linear-gradient(180deg, rgba(var(--neon-1-rgb), 0.1), rgba(var(--neon-2-rgb), 0.05)); 
-    color: var(--text); border-color: var(--accent);
-  }
-  
-  /* Mode and Theme Toggles */
-  .mode-btn, #themeToggle{
-    padding:8px 12px;border-radius:10px;background:var(--glass);border:1px solid var(--border-color);color:var(--muted);cursor:pointer;
-    transition:all .15s;
-  }
-  .mode-btn.active{
-    background:linear-gradient(90deg, var(--neon-1, rgba(14,165,233,0.14)), var(--neon-2, rgba(59,130,246,0.06))); 
-    color:var(--accent); border:1px solid var(--neon-1);
-  }
+.mode-btn.active {
+  background: #1a73e8;
+  color: #fff;
+  border-color: #1a73e8;
+}
 
-  /* editor */
-  textarea{
-    flex:1;min-height:200px; resize:vertical;padding:14px;border-radius:12px;border:1px solid var(--border-color);
-    background:linear-gradient(180deg, var(--glass), var(--glass)); 
-    font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; 
-    color:var(--text); outline:none; caret-color:var(--accent); text-shadow:0 0 8px var(--shadow-color);
-    width: 100%; box-sizing: border-box;
-  }
-  textarea:focus{box-shadow:0 0 18px var(--shadow-color); border-color:var(--neon-1)}
-  
-  @media (max-width:880px){
-    .right .card > div:first-child{flex-direction:column; gap:12px;} 
-    .right .card > div:first-child > div:nth-child(2){width:100%; flex-direction:row;} 
-  }
+/* ------------------ TABS ------------------ */
+.tabs {
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  padding-top: 12px;
+}
 
-  /* neon button */
-  .btn{
-    display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;border:1px solid var(--border-color);
-    cursor:pointer;background:linear-gradient(90deg, var(--glass), var(--glass)); color: var(--text);font-weight:600;
-    transition:all .18s; position:relative; overflow:visible;
-  }
-  .btn.primary{
-    background:linear-gradient(90deg,var(--neon-1),var(--neon-2));
-    color:var(--btn-primary-text); border:none; 
-    box-shadow: 0 8px 30px var(--shadow-color);
-  }
-  /* Theme-specific primary button style for contrast on light theme */
-  .theme-light .btn.primary {
-    background:linear-gradient(90deg, var(--neon-1), var(--neon-2));
-    color: var(--btn-primary-text);
-  }
+.tab-btn {
+  padding: 10px 14px;
+  background: #e9eef3;
+  border-radius: 20px;
+  border: none;
+  white-space: nowrap;
+}
 
-  .small{font-size:13px;padding:7px 10px;border-radius:10px}
+.tab-btn.active {
+  background: #1a73e8;
+  color: #fff;
+}
 
-  /* output actions */
-  .out-actions{display:flex;gap:8px;align-items:center;margin-top:10px; flex-wrap:wrap;} 
-  .muted{color:var(--muted);font-size:13px}
-  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:var(--glass);border:1px solid var(--border-color);font-size:12px;color:var(--muted)}
+/* ------------------ TEXTAREAS ------------------ */
+textarea {
+  width: 100%;
+  min-height: 160px;
+  border-radius: 10px;
+  border: 1px solid #d0d7de;
+  padding: 12px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
 
-  /* hologram hover for cards (use accent-based shadow) */
-  .holo:hover{
-    transform:translateY(-6px) scale(1.01); 
-    box-shadow: 0 14px 40px rgba(3,7,20,0.6), 0 0 40px var(--shadow-color);
-  }
+/* ------------------ BUTTONS ------------------ */
+.btn {
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #1a73e8;
+  color: #fff;
+  font-weight: 600;
+  width: 100%;
+  margin-top: 12px;
+  font-size: 15px;
+}
 
+.btn.secondary {
+  background: #e4e7eb;
+  color: #333;
+  font-weight: 500;
+}
+
+/* ------------------ BOTTOM NAV ------------------ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #fff;
+  border-top: 1px solid #d8d8d8;
+  display: flex;
+  justify-content: space-around;
+  padding: 12px 0;
+}
+
+.bottom-nav button {
+  background: none;
+  border: none;
+  color: #1a73e8;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* ------------------ TOAST ------------------ */
+.toast {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #111;
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 8px;
+  opacity: 0;
+  transition: 0.3s ease;
+}
+
+.toast.show {
+  opacity: 1;
+}
 </style>
 </head>
-<body>
-  <div class="cyber-grid" aria-hidden="true"></div>
 
-  <div class="wrap">
-    <div class="header">
-      <div>
-        <h1>Encode • Decode</h1>
-        <div class="sub">Base64, URL, Hex, ROT13, UTF-8 — client-side transforms</div>
-      </div>
-      <div style="display:flex;gap:10px;align-items:center">
-        <button id="themeToggle" class="btn small">Switch Theme</button>
-        <button id="runTop" class="btn neon-btn small">Run</button>
-      </div>
+<body>
+
+<header>Encode & Decode</header>
+
+<div class="container">
+
+  <div class="card">
+    <!-- Mode Switch -->
+    <div class="mode-switch">
+      <button id="modeEncode" class="mode-btn active">Encode</button>
+      <button id="modeDecode" class="mode-btn">Decode</button>
     </div>
 
-    <div class="grid">
-      <div class="left sidebar">
-        <div class="card neon-border holo">
-          <div style="font-weight:700;color:var(--accent)">Configuration</div>
-          <div style="margin-top:10px;display:flex;gap:8px;">
-            <button id="modeEncode" class="mode-btn active">Encode</button>
-            <button id="modeDecode" class="mode-btn">Decode</button>
-          </div>
-          <div style="margin-top:12px;display:flex;gap:8px">
-            <button id="clearAll" class="btn small">Clear</button>
-            <button id="swapBtn" class="btn small">Swap</button>
-          </div>
-        </div>
-        
-        <div style="height:12px"></div>
-
-        <div class="card neon-border holo">
-          <div style="font-weight:700;color:var(--accent); margin-bottom: 8px;">Encoding/Decoding Menu</div>
-          <div class="methods" aria-hidden="false">
-            <button class="method-btn active" data-method="base64"><strong>Base64</strong><div style="font-size:12px;color:var(--muted)">Unicode-safe Base64</div></button>
-            <button class="method-btn" data-method="url"><strong>URL</strong><div style="font-size:12px;color:var(--muted)">Percent encoding</div></button>
-            <button class="method-btn" data-method="hex"><strong>Hex</strong><div style="font-size:12px;color:var(--muted)">Hexadecimal bytes</div></button>
-            <button class="method-btn" data-method="rot13"><strong>ROT13</strong><div style="font-size:12px;color:var(--muted)">Simple substitution</div></button>
-            <button class="method-btn" data-method="utf8"><strong>UTF-8</strong><div style="font-size:12px;color:var(--muted)">Bytes view</div></button>
-            <hr style="border-top:1px solid var(--border-color); margin:4px 0;">
-            <button class="method-btn" data-method="special_id"><strong>SPECIAL ID</strong><div style="font-size:12px;color:var(--muted)">Hardcoded Hex ID Utility</div></button>
-          </div>
-        </div>
-
-        <div style="height:12px"></div>
-
-        <div class="card neon-border holo">
-          <div style="font-weight:700;color:var(--accent)">Privacy</div>
-          <div class="muted" style="margin-top:8px;font-size:13px">All transforms run in your browser. Links contain the encoded payload in the URL hash and never reach a server.</div>
-        </div>
-      </div>
-
-      <div class="right">
-        <div class="card neon-border holo">
-          <div style="display:flex;gap:12px;align-items:start">
-            <div style="flex:1;min-width:0">
-              <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:8px">Input</label>
-              <textarea id="input" placeholder="Paste text or code here — Unicode supported"></textarea>
-            </div>
-
-            <div style="width:190px;flex-shrink:0;display:flex;flex-direction:column;gap:8px">
-              <div style="background:linear-gradient(180deg,var(--glass),transparent);padding:10px;border-radius:10px;border:1px solid var(--border-color)">
-                <div style="font-size:13px;color:var(--muted)">Selected Method</div>
-                <div id="methodBadge" style="font-weight:700;color:var(--accent);margin-top:6px">Base64</div>
-                <div style="font-size:12px;color:var(--muted);margin-top:6px" id="methodHint">Unicode-safe Base64</div>
-              </div>
-              <button id="runMain" class="btn primary neon-btn">Run</button>
-              <button id="insertExample" class="btn small">Insert example</button>
-            </div>
-          </div>
-
-          <div id="error" style="margin-top:10px;color:#ffb3c6;display:none"></div>
-
-        </div>
-
-        <div style="height:12px"></div>
-
-        <div class="card neon-border holo">
-          <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:8px">Output</label>
-          <textarea id="output" readonly placeholder="Result appears here"></textarea>
-
-          <div class="out-actions" style="margin-top:12px">
-            <button id="copyOut" class="btn small">Copy</button>
-            <button id="downloadOut" class="btn small">Download</button>
-            <button id="shareOut" class="btn small">Share link</button>
-            <div style="flex:1"></div>
-            <div class="muted">Export: plain text</div>
-          </div>
-        </div>
-
-        <div class="footer">Made with ❤️ — fully client-side. Current Theme: <span id="currentThemeLabel">Cyber Blue</span></div>
-      </div>
+    <!-- Encoder Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-method="base64">Base64</button>
+      <button class="tab-btn" data-method="url">URL</button>
+      <button class="tab-btn" data-method="hex">Hex</button>
+      <button class="tab-btn" data-method="rot13">ROT13</button>
+      <button class="tab-btn" data-method="utf8">UTF-8</button>
+      <button class="tab-btn" data-method="special">Special ID</button>
     </div>
   </div>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <!-- Input Box -->
+  <div class="card">
+    <label style="font-weight:600;">Input</label>
+    <textarea id="input" placeholder="Enter your text here..."></textarea>
+    <button id="run" class="btn">Run</button>
+  </div>
+
+  <!-- Output Box -->
+  <div class="card">
+    <label style="font-weight:600;">Output</label>
+    <textarea id="output" placeholder="Output will appear here..." readonly></textarea>
+
+    <button id="copyOut" class="btn secondary">Copy</button>
+    <button id="downloadOut" class="btn secondary">Download</button>
+    <button id="shareOut" class="btn secondary">Share</button>
+  </div>
+
+</div>
+
+<!-- FIXED BOTTOM NAV -->
+<div class="bottom-nav">
+  <button id="clearAll">Clear</button>
+  <button id="swapBtn">Swap</button>
+  <button id="exampleBtn">Example</button>
+</div>
+
+<div id="toast" class="toast"></div>
 
 <script>
-/* ---------- Constants for SPECIAL ID ---------- */
-const SPECIAL_ID_HEX_ESCAPED = "\\x36\\x30\\x37\\x39\\x39\\x34\\x33\\x31\\x31\\x31";
-const SPECIAL_ID_HEX_CLEAN = "3630373939433313131"; 
-const SPECIAL_ID_STRING = "6079943111"; 
+/* ------------------ ENCODER FUNCTIONS ------------------ */
 
-/* ---------- Helpers (Unicode-safe) ---------- */
-function utf8ToBase64(str){
-  const enc = new TextEncoder();
-  const bytes = enc.encode(str);
-  let binary = '';
-  for(let i=0;i<bytes.length;i++) binary += String.fromCharCode(bytes[i]);
-  return btoa(binary);
-}
-function base64ToUtf8(b64){
-  try{
-    const binary = atob(b64);
-    const bytes = new Uint8Array([...binary].map(c => c.charCodeAt(0)));
-    const dec = new TextDecoder();
-    return dec.decode(bytes);
-  }catch(e){
-    return null;
-  }
-}
-function encodeHex(str){
-  const enc = new TextEncoder(); const bytes = enc.encode(str);
-  return Array.from(bytes).map(b => b.toString(16).padStart(2,'0')).join('');
-}
-function decodeHex(hex){
-  try{
-    const clean = hex.trim().replace(/\s+/g,'').toLowerCase();
-    if(clean.length % 2) return null;
-    const parts = clean.match(/.{1,2}/g);
-    const bytes = new Uint8Array(parts.map(p => parseInt(p,16)));
-    const dec = new TextDecoder();
-    return dec.decode(bytes);
-  }catch(e){ return null; }
-}
-function rot13(str){ return str.replace(/[A-Za-z]/g, c => { const base = c <= 'Z' ? 65 : 97; return String.fromCharCode(((c.charCodeAt(0)-base+13)%26)+base); }) }
+function encodeBase64(t){return btoa(unescape(encodeURIComponent(t))); }
+function decodeBase64(t){return decodeURIComponent(escape(atob(t))); }
 
-/* url-safe base64 helpers */
-function toUrlSafeBase64(b64){ return b64.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,''); }
-function fromUrlSafeBase64(s){
-  if(!s) return null;
-  s = s.replace(/-/g,'+').replace(/_/g,'/');
-  while(s.length % 4) s += '=';
-  try{ return atob(s); } catch(e) { return null; }
+function encodeURL(t){ return encodeURIComponent(t); }
+function decodeURL(t){ return decodeURIComponent(t); }
+
+function encodeHex(t){
+  return [...t].map(c=>c.charCodeAt(0).toString(16).padStart(2,'0')).join('');
+}
+function decodeHex(t){
+  return t.match(/.{1,2}/g).map(h=>String.fromCharCode(parseInt(h,16))).join('');
 }
 
-/* ---------- UI elements ---------- */
-const inputEl = document.getElementById('input');
-const outputEl = document.getElementById('output');
-const runMain = document.getElementById('runMain');
-const runTop = document.getElementById('runTop');
-const copyOut = document.getElementById('copyOut');
-const downloadOut = document.getElementById('downloadOut');
-const shareOut = document.getElementById('shareOut');
-const toast = document.getElementById('toast');
-const errorEl = document.getElementById('error');
-const modeEncode = document.getElementById('modeEncode');
-const modeDecode = document.getElementById('modeDecode');
-const methodBadge = document.getElementById('methodBadge');
-const methodHint = document.getElementById('methodHint');
-const clearAll = document.getElementById('clearAll');
-const swapBtn = document.getElementById('swapBtn');
-const insertExample = document.getElementById('insertExample');
-const themeToggle = document.getElementById('themeToggle');
-const currentThemeLabel = document.getElementById('currentThemeLabel');
+function rot13(t){
+  return t.replace(/[a-zA-Z]/g, c =>
+    String.fromCharCode(
+      (c<="Z"?90:122)>=(c=c.charCodeAt(0)+13)?c:c-26
+    )
+  );
+}
 
-let mode = 'encode';
-let method = 'base64';
-let currentTheme = 'dark'; // 'dark' (Cyber Blue) or 'light' (Hacker Green)
+function encodeUTF8(t){ return new TextEncoder().encode(t).join(" "); }
+function decodeUTF8(t){
+  return new TextDecoder().decode(new Uint8Array(t.split(" ").map(Number)));
+}
 
-/* Helper to update CSS variables for light theme */
-function updateTheme(theme) {
-    const body = document.body;
-    if (theme === 'light') {
-        body.classList.add('theme-light');
-        currentTheme = 'light';
-        currentThemeLabel.textContent = 'Hacker Green';
-        // Set RGB for use in dynamic backgrounds
-        document.documentElement.style.setProperty('--neon-1-rgb', '16, 185, 129');
-        document.documentElement.style.setProperty('--neon-2-rgb', '5, 150, 105');
-    } else {
-        body.classList.remove('theme-light');
-        currentTheme = 'dark';
-        currentThemeLabel.textContent = 'Cyber Blue';
-        // Set RGB for use in dynamic backgrounds
-        document.documentElement.style.setProperty('--neon-1-rgb', '14, 165, 233');
-        document.documentElement.style.setProperty('--neon-2-rgb', '59, 130, 246');
+function encodeSpecial(t){
+  let letters="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let out=t.split("").map(ch=>{
+    let r="", bold=false, small=false, big=false;
+    for(let i=0;i<4;i++){
+      let x=letters[Math.floor(Math.random()*letters.length)];
+      if(i===0) bold=true;
+      if(i===1) small=true;
+      if(i===2) big=true;
+      r += bold?("**"+x+"**"): small?("<small>"+x+"</small>"): big?("<big>"+x+"</big>"): x;
     }
+    return ch + "[" + r + "]";
+  }).join("");
+  return out;
 }
-// Initialize the theme
-updateTheme('dark');
+function decodeSpecial(t){ return t.replace(/\[[\s\S]*?\]/g,""); }
 
+/* ------------------ HANDLERS ------------------ */
 
-/* ---------- Methods metadata ---------- */
-const METHODS = {
-  base64:{label:'Base64', hint:'Unicode-safe Base64'},
-  url:{label:'URL', hint:'Percent-encoding'},
-  hex:{label:'Hex', hint:'Hexadecimal bytes'},
-  rot13:{label:'ROT13', hint:'Simple substitution cipher'},
-  utf8:{label:'UTF-8', hint:'Bytes view (space separated)'},
-  special_id:{label:'SPECIAL ID', hint:'Encode/Decode ' + SPECIAL_ID_HEX_ESCAPED} 
+let currentMode="encode";
+let method="base64";
+
+document.querySelectorAll(".mode-btn").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".mode-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    currentMode = btn.id==="modeEncode" ? "encode":"decode";
+  };
+});
+
+document.querySelectorAll(".tab-btn").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    method = btn.dataset.method;
+  };
+});
+
+function toast(msg){
+  let t=document.getElementById("toast");
+  t.textContent=msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),1500);
+}
+
+document.getElementById("run").onclick=()=>{
+  let input=document.getElementById("input").value;
+  let out="";
+
+  try {
+    if(method==="base64") out=currentMode==="encode"?encodeBase64(input):decodeBase64(input);
+    if(method==="url") out=currentMode==="encode"?encodeURL(input):decodeURL(input);
+    if(method==="hex") out=currentMode==="encode"?encodeHex(input):decodeHex(input);
+    if(method==="rot13") out=rot13(input);
+    if(method==="utf8") out=currentMode==="encode"?encodeUTF8(input):decodeUTF8(input);
+    if(method==="special") out=currentMode==="encode"?encodeSpecial(input):decodeSpecial(input);
+  }
+  catch(e){ out="Error: Invalid input"; }
+
+  document.getElementById("output").value=out;
 };
 
-/* ---------- attach event to method buttons ---------- */
-document.querySelectorAll('.method-btn').forEach(btn=>{
-  btn.addEventListener('click', ()=>{
-    document.querySelectorAll('.method-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    method = btn.getAttribute('data-method');
-    methodBadge.textContent = METHODS[method].label;
-    methodHint.textContent = METHODS[method].hint;
+document.getElementById("copyOut").onclick=()=>{
+  navigator.clipboard.writeText(document.getElementById("output").value);
+  toast("Copied");
+};
 
-    // Special logic for SPECIAL_ID: auto-fill input for convenience
-    if(method === 'special_id' && !inputEl.value) {
-      if(mode === 'encode') inputEl.value = SPECIAL_ID_STRING;
-      else inputEl.value = SPECIAL_ID_HEX_ESCAPED; 
-    }
-  });
-});
+document.getElementById("downloadOut").onclick=()=>{
+  let blob=new Blob([document.getElementById("output").value], {type:"text/plain"});
+  let a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="output.txt";
+  a.click();
+};
 
-/* ---------- mode toggles ---------- */
-modeEncode.addEventListener('click', ()=>{ mode = 'encode'; modeEncode.classList.add('active'); modeDecode.classList.remove('active'); });
-modeDecode.addEventListener('click', ()=>{ mode = 'decode'; modeDecode.classList.add('active'); modeEncode.classList.remove('active'); });
-
-/* ---------- theme toggle ---------- */
-themeToggle.addEventListener('click', () => {
-    updateTheme(currentTheme === 'dark' ? 'light' : 'dark');
-    showToast('Switched to ' + currentThemeLabel.textContent);
-});
-
-
-/* ---------- run logic ---------- */
-function showToast(msg, time=2200){
-  toast.textContent = msg; toast.classList.add('show');
-  setTimeout(()=>toast.classList.remove('show'), time);
-}
-function showError(msg){
-  errorEl.style.display = 'block'; errorEl.textContent = 'Error: ' + msg;
-  setTimeout(()=>{ errorEl.style.display='none'; }, 3000);
-}
-function runTransform(){
-  errorEl.style.display = 'none';
-  let inText = inputEl.value || '';
-  try{
-    let res = '';
-    if(method === 'base64'){
-      if(mode === 'encode') res = utf8ToBase64(inText);
-      else {
-        const dec = base64ToUtf8(inText.trim());
-        if(dec === null) throw new Error('Invalid Base64 input');
-        res = dec;
-      }
-    } else if(method === 'url'){
-      if(mode === 'encode') res = encodeURIComponent(inText);
-      else res = decodeURIComponent(inText);
-    } else if(method === 'hex'){
-      if(mode === 'encode') res = encodeHex(inText);
-      else {
-        const dec = decodeHex(inText);
-        if(dec === null) throw new Error('Invalid Hex input');
-        res = dec;
-      }
-    } else if(method === 'rot13'){
-      res = rot13(inText);
-    } else if(method === 'utf8'){
-      if(mode === 'encode'){
-        const enc = new TextEncoder(); res = Array.from(enc.encode(inText)).join(' ');
-      } else {
-        const parts = inText.trim().split(/\s+/).map(n=>Number(n));
-        if(parts.some(n=>Number.isNaN(n) || n<0 || n>255)) throw new Error('Invalid byte list');
-        const dec = new TextDecoder(); res = dec.decode(new Uint8Array(parts));
-      }
-    } else if(method === 'special_id'){
-      const cleanInput = inText.trim();
-      const cleanHexInput = cleanInput.replace(/\\x/g, '').toLowerCase();
-
-      if(mode === 'encode'){
-        // If input is the string ID or empty, output the escaped hex string
-        if(cleanInput === SPECIAL_ID_STRING || !cleanInput) {
-           res = SPECIAL_ID_HEX_ESCAPED;
-        } else {
-           // Fallback: encode the input string to hex (un-escaped)
-           res = encodeHex(inText).replace(/(.{2})/g, '\\x$1').toUpperCase();
-        }
-      } else {
-        // If input is the escaped hex or the clean hex or empty, output the string ID
-        if(cleanHexInput === SPECIAL_ID_HEX_CLEAN || !cleanInput) {
-          res = SPECIAL_ID_STRING;
-        } else {
-           // Fallback: decode general hex (requires clean unescaped hex)
-           const cleanInputForDecode = cleanInput.replace(/\\x/g, '');
-           const dec = decodeHex(cleanInputForDecode);
-           if(dec === null) throw new Error('Invalid Hex input for SPECIAL ID');
-           res = dec;
-        }
-      }
-    }
-    outputEl.value = res;
-    showToast('Done');
-  }catch(e){
-    showError(e.message || 'Error');
-    outputEl.value = '';
+document.getElementById("shareOut").onclick=()=>{
+  if(navigator.share){
+    navigator.share({text:document.getElementById("output").value});
+  } else {
+    toast("Sharing not supported");
   }
-}
+};
 
-/* ---------- share helpers ---------- */
-function makeShareLink(payloadText){
-  // payloadText -> utf8 base64 -> url-safe base64 -> #msg=...
-  const b64 = utf8ToBase64(payloadText);
-  const safe = toUrlSafeBase64(b64);
-  return location.origin + location.pathname + '#msg=' + safe;
-}
+document.getElementById("swapBtn").onclick=()=>{
+  let i=document.getElementById("input");
+  let o=document.getElementById("output");
+  let temp=i.value;
+  i.value=o.value;
+  o.value=temp;
+};
 
-/* ---------- button bindings ---------- */
-runMain.addEventListener('click', runTransform);
-runTop.addEventListener('click', runTransform);
-copyOut.addEventListener('click', async ()=> {
-  try{ await navigator.clipboard.writeText(outputEl.value || ''); showToast('Copied'); }
-  catch(e){ showError('Cannot copy'); }
-});
-downloadOut.addEventListener('click', ()=> {
-  const blob = new Blob([outputEl.value || ''], {type:'text/plain'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'output.txt'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-});
-shareOut.addEventListener('click', async ()=> {
-  const payload = outputEl.value || inputEl.value || '';
-  if(!payload){ showError('Nothing to share'); return; }
-  const link = makeShareLink(payload);
-  try{ await navigator.clipboard.writeText(link); showToast('Share link copied'); }
-  catch(e){ showError('Could not copy link'); }
-});
+document.getElementById("clearAll").onclick=()=>{
+  document.getElementById("input").value="";
+  document.getElementById("output").value="";
+  toast("Cleared");
+};
 
-/* extra controls */
-clearAll.addEventListener('click', ()=>{ inputEl.value=''; outputEl.value=''; showToast('Cleared') });
-swapBtn.addEventListener('click', ()=>{ inputEl.value = outputEl.value || ''; outputEl.value=''; showToast('Swapped'); });
-insertExample.addEventListener('click', ()=>{ inputEl.value = 'Hello from Cyber Blue! \nThis is an example message.'; showToast('Example inserted'); });
-
-/* keyboard shortcut: Ctrl+Enter to run */
-document.addEventListener('keydown', (e)=>{ if((e.ctrlKey||e.metaKey) && e.key === 'Enter'){ runTransform(); } });
-
-/* ---------- Load from hash if present ---------- */
-function initFromHash(){
-  try{
-    const hash = location.hash.slice(1);
-    if(!hash) return;
-    const params = new URLSearchParams(hash);
-    const v = params.get('msg');
-    if(!v) return;
-    // reconstruct base64 and decode to text
-    let s = v.replace(/-/g,'+').replace(/_/g,'/');
-    while(s.length % 4) s += '=';
-    const maybe = base64ToUtf8(s);
-    if(maybe !== null){
-      // place it in input and suggest decode mode
-      inputEl.value = maybe;
-      mode = 'decode';
-      modeEncode.classList.remove('active'); modeDecode.classList.add('active');
-      showToast('Shared message loaded — set to Decode');
-      // optionally auto-run:
-      // runTransform();
-    }
-  }catch(e){
-    // ignore
-  }
-}
-initFromHash();
-
-/* accessibility: handle paste of long url (if user opens an URL with query instead of hash) */
-(function tryQueryFallback(){
-  const q = new URLSearchParams(location.search).get('msg');
-  if(q && !location.hash) {
-    location.hash = 'msg=' + q;
-    initFromHash();
-  }
-})();
-
+document.getElementById("exampleBtn").onclick=()=>{
+  document.getElementById("input").value="Hello World";
+  toast("Example inserted");
+};
 </script>
+
 </body>
 </html>
