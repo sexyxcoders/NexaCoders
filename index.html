@@ -441,4 +441,49 @@ shareOut.addEventListener('click', async ()=> {
 });
 
 /* extra controls */
-clearAll.
+clearAll.addEventListener('click', ()=>{ inputEl.value=''; outputEl.value=''; showToast('Cleared') });
+swapBtn.addEventListener('click', ()=>{ inputEl.value = outputEl.value || ''; outputEl.value=''; showToast('Swapped'); });
+insertExample.addEventListener('click', ()=>{ inputEl.value = 'Hello from Cyber Blue! \\nThis is an example message.'; showToast('Example inserted'); });
+
+/* keyboard shortcut: Ctrl+Enter to run */
+document.addEventListener('keydown', (e)=>{ if((e.ctrlKey||e.metaKey) && e.key === 'Enter'){ runTransform(); } });
+
+/* ---------- Load from hash if present ---------- */
+function initFromHash(){
+  try{
+    const hash = location.hash.slice(1);
+    if(!hash) return;
+    const params = new URLSearchParams(hash);
+    const v = params.get('msg');
+    if(!v) return;
+    // reconstruct base64 and decode to text
+    let s = v.replace(/-/g,'+').replace(/_/g,'/');
+    while(s.length % 4) s += '=';
+    const maybe = base64ToUtf8(s);
+    if(maybe !== null){
+      // place it in input and suggest decode mode
+      inputEl.value = maybe;
+      mode = 'decode';
+      modeEncode.classList.remove('active'); modeDecode.classList.add('active');
+      showToast('Shared message loaded — set to Decode');
+      // optionally auto-run:
+      // runTransform();
+    }
+  }catch(e){
+    // ignore
+  }
+}
+initFromHash();
+
+/* accessibility: handle paste of long url (if user opens an URL with query instead of hash) */
+(function tryQueryFallback(){
+  const q = new URLSearchParams(location.search).get('msg');
+  if(q && !location.hash) {
+    location.hash = 'msg=' + q;
+    initFromHash();
+  }
+})();
+
+</script>
+</body>
+</html>
