@@ -29,8 +29,8 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:16px 8px; /* Adjusted padding for better mobile fit */
-    overflow-x:hidden; /* Prevent horizontal scroll on mobile */
+    padding:10px; /* Reduced padding for mobile screen real estate */
+    overflow-x:hidden; /* Prevent horizontal scroll */
     box-sizing: border-box;
   }
 
@@ -86,13 +86,16 @@
   }
   @keyframes hue{0%{filter:hue-rotate(0deg) blur(6px);}100%{filter:hue-rotate(360deg) blur(6px);}}
 
-  /* layout grid */
+  /* layout grid - Default (Desktop) */
   .grid{display:grid;grid-template-columns: 320px 1fr; gap:18px;}
+  
+  /* Mobile Layout */
   @media (max-width:880px){ 
-    .grid{grid-template-columns:1fr; gap:12px} 
+    .grid{grid-template-columns:1fr; gap:12px} /* Stack everything */
     .left-hide{display:none} 
-    /* Adjust header font size on very small screens */
     h1{font-size:18px;}
+    .header{margin-bottom:12px;}
+    .sidebar{width:100%;} /* Ensure sidebar takes full width when stacked */
   }
 
   /* sidebar */
@@ -112,8 +115,23 @@
 
   /* editor */
   .editor{display:flex;gap:12px}
-  textarea{flex:1;min-height:220px;resize:vertical;padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; color:#dff6ff; outline:none; caret-color:var(--accent); text-shadow:0 0 8px rgba(56,189,248,0.08);}
+  /* Crucial fix: ensure textarea takes full available width */
+  textarea{
+    flex:1;min-height:200px; /* Slightly reduced min-height for mobile */
+    resize:vertical;padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);
+    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); 
+    font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; 
+    color:#dff6ff; outline:none; caret-color:var(--accent); text-shadow:0 0 8px rgba(56,189,248,0.08);
+    width: 100%; /* Ensure width calculation is correct */
+    box-sizing: border-box;
+  }
   textarea:focus{box-shadow:0 0 18px rgba(59,130,246,0.14); border-color:rgba(14,165,233,0.3)}
+  
+  @media (max-width:880px){
+    .right .card > div:first-child{flex-direction:column; gap:12px;} /* Stack input and control panel */
+    .right .card > div:first-child > div:nth-child(2){width:100%; flex-direction:row;} /* Control panel now full width */
+  }
+
 
   /* neon button */
   .btn{
@@ -131,7 +149,7 @@
   .small{font-size:13px;padding:7px 10px;border-radius:10px}
 
   /* output actions */
-  .out-actions{display:flex;gap:8px;align-items:center;margin-top:10px}
+  .out-actions{display:flex;gap:8px;align-items:center;margin-top:10px; flex-wrap:wrap;} /* Allow wrapping buttons on small screens */
   .muted{color:var(--muted);font-size:13px}
 
   /* badges/labels */
@@ -144,6 +162,7 @@
   /* toast */
   .toast{position:fixed;right:24px;bottom:24px;background:rgba(2,20,36,0.9);padding:10px 14px;border-radius:10px;border:1px solid rgba(14,165,233,0.12);box-shadow:0 6px 30px rgba(3,7,18,0.7);color:#e6fbff;font-weight:600;z-index:1600;opacity:0;transform:translateY(8px);transition:all .22s}
   .toast.show{opacity:1; transform:translateY(0);}
+  @media (max-width:400px){.toast{left:10px;right:10px; text-align:center}}
 
   /* footer */
   .footer{margin-top:12px;font-size:12px;color:var(--muted); text-align:center}
@@ -252,8 +271,8 @@
 <script>
 /* ---------- Constants for SPECIAL ID ---------- */
 const SPECIAL_ID_HEX_ESCAPED = "\\x36\\x30\\x37\\x39\\x39\\x34\\x33\\x31\\x31\\x31";
-const SPECIAL_ID_HEX_CLEAN = "3630373939433313131"; // 0x36 0x30 ... (Fix: Corrected typo 433313131 was 43313131)
-const SPECIAL_ID_STRING = "6079943111"; // The ASCII/UTF-8 string representation of the bytes
+const SPECIAL_ID_HEX_CLEAN = "3630373939433313131"; 
+const SPECIAL_ID_STRING = "6079943111"; 
 
 /* ---------- Helpers (Unicode-safe) ---------- */
 function utf8ToBase64(str){
@@ -327,7 +346,7 @@ const METHODS = {
   hex:{label:'Hex', hint:'Hexadecimal bytes'},
   rot13:{label:'ROT13', hint:'Simple substitution cipher'},
   utf8:{label:'UTF-8', hint:'Bytes view (space separated)'},
-  special_id:{label:'SPECIAL ID', hint:'Encode/Decode ' + SPECIAL_ID_HEX_ESCAPED} // Use escaped for hint
+  special_id:{label:'SPECIAL ID', hint:'Encode/Decode ' + SPECIAL_ID_HEX_ESCAPED} 
 };
 
 /* ---------- attach event to method buttons ---------- */
@@ -343,7 +362,7 @@ document.querySelectorAll('.method-btn').forEach(btn=>{
     // Special logic for SPECIAL_ID: auto-fill input for convenience
     if(method === 'special_id' && !inputEl.value) {
       if(mode === 'encode') inputEl.value = SPECIAL_ID_STRING;
-      else inputEl.value = SPECIAL_ID_HEX_ESCAPED; // Use escaped for decode input hint
+      else inputEl.value = SPECIAL_ID_HEX_ESCAPED; 
     }
   });
 });
