@@ -8,7 +8,7 @@
 <style>
 body {margin:0;font-family:Inter,sans-serif;background:#f5f7fa;color:#111;}
 header {background:#1a73e8;padding:16px;text-align:center;color:#fff;font-size:20px;font-weight:600;}
-.container {padding:16px;padding-bottom:120px;}
+.container {padding:16px;padding-bottom:160px;}
 .card {background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 5px rgba(0,0,0,0.08);margin-bottom:16px;}
 .mode-switch {display:flex;gap:10px;margin-bottom:12px;}
 .mode-btn {flex:1;padding:12px;border-radius:8px;border:1px solid #d0d7de;background:#fff;cursor:pointer;font-size:14px;}
@@ -21,8 +21,10 @@ textarea {width:100%;min-height:160px;border-radius:10px;border:1px solid #d0d7d
 .btn.secondary {background:#e4e7eb;color:#333;font-weight:500;}
 .bottom-nav {position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #d8d8d8;display:flex;justify-content:space-around;padding:12px 0;}
 .bottom-nav button {background:none;border:none;color:#1a73e8;font-size:15px;font-weight:600;cursor:pointer;}
-.toast {position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:12px 18px;border-radius:8px;opacity:0;transition:0.3s ease;}
+.toast {position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:12px 18px;border-radius:8px;opacity:0;transition:0.3s ease;}
 .toast.show {opacity:1;}
+footer {text-align:center;padding:12px 0;color:#555;font-size:14px;}
+footer a {color:#1a73e8;text-decoration:none;margin:0 6px;}
 label{font-weight:600;}
 </style>
 </head>
@@ -87,6 +89,13 @@ label{font-weight:600;}
   <button id="exampleBtn">Example</button>
 </div>
 
+<!-- Footer -->
+<footer>
+  Made by <strong>@noncarder</strong> | 
+  <a href="https://t.me/NexaCoders" target="_blank">Support Channel</a> | 
+  <a href="https://t.me/NexaMeetup" target="_blank">Support Chat</a>
+</footer>
+
 <div id="toast" class="toast"></div>
 
 <script>
@@ -125,7 +134,7 @@ function decodeSpecial(t){return t==="\\x36\\x30\\x37\\x39\\x39\\x34\\x33\\x31\\
 function encodeBinary(t){return [...t].map(c=>c.charCodeAt(0).toString(2).padStart(8,"0")).join(" "); }
 function decodeBinary(t){return String.fromCharCode(...t.split(" ").map(b=>parseInt(b,2))); }
 
-function encodeBase32(t){ /* Simple Base32 */ return [...t].map(c=>BASE32_ALPHABET[c.charCodeAt(0)%32]).join(""); }
+function encodeBase32(t){ return [...t].map(c=>BASE32_ALPHABET[c.charCodeAt(0)%32]).join(""); }
 function decodeBase32(t){return t.split("").map(c=>String.fromCharCode(BASE32_ALPHABET.indexOf(c))).join(""); }
 
 function encodeBase58(t){return [...t].map(c=>BASE58_ALPHABET[c.charCodeAt(0)%58]).join("");}
