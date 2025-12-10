@@ -49,7 +49,6 @@ label{font-weight:600;}
     <button class="tab-btn" data-method="xescape">\xNN Escape</button>
     <button class="tab-btn" data-method="rot13">ROT13</button>
     <button class="tab-btn" data-method="utf8">UTF-8</button>
-    <button class="tab-btn" data-method="special">Special ID</button>
     <button class="tab-btn" data-method="binary">Binary</button>
     <button class="tab-btn" data-method="base32">Base32</button>
     <button class="tab-btn" data-method="base58">Base58</button>
@@ -80,6 +79,14 @@ label{font-weight:600;}
     <button id="shareOut" class="btn secondary">Share</button>
   </div>
 
+  <!-- Support Info -->
+  <div class="card" style="text-align:center;">
+    <strong>Support & Credits</strong><br>
+    <a href="https://t.me/NexaCoders" target="_blank">Support Channel</a> | 
+    <a href="https://t.me/NexaMeetup" target="_blank">Support Chat</a><br>
+    Made by <strong>@noncarder</strong>
+  </div>
+
 </div>
 
 <!-- Bottom Nav -->
@@ -89,18 +96,10 @@ label{font-weight:600;}
   <button id="exampleBtn">Example</button>
 </div>
 
-<!-- Footer -->
-<footer>
-  Made by <strong>@noncarder</strong> | 
-  <a href="https://t.me/NexaCoders" target="_blank">Support Channel</a> | 
-  <a href="https://t.me/NexaMeetup" target="_blank">Support Chat</a>
-</footer>
-
 <div id="toast" class="toast"></div>
 
 <script>
 /* ------------------ ENCODERS/DECODERS ------------------ */
-const SPECIAL_ID_STRING = "6079943111";
 const BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
 const BASE62_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
@@ -120,6 +119,7 @@ function decodeURL(t){ try{return decodeURIComponent(t);}catch(e){return null;} 
 
 function encodeHex(t){ return [...t].map(c=>"\\x"+c.charCodeAt(0).toString(16).padStart(2,"0")).join(""); }
 function decodeHex(t){return t.replace(/\\x([0-9A-Fa-f]{2})/g,(_,h)=>String.fromCharCode(parseInt(h,16)));}
+
 function decodeXEscape(t){return decodeHex(t);}
 function encodeXEscape(t){return encodeHex(t);}
 
@@ -127,9 +127,6 @@ function rot13(t){return t.replace(/[a-zA-Z]/g,c=>String.fromCharCode((c<="Z"?90
 
 function encodeUTF8(t){ return new TextEncoder().encode(t).join(" "); }
 function decodeUTF8(t){return new TextDecoder().decode(new Uint8Array(t.split(" ").map(Number)));}
-
-function encodeSpecial(t){return t===SPECIAL_ID_STRING?"\\x36\\x30\\x37\\x39\\x39\\x34\\x33\\x31\\x31\\x31":encodeHex(t);}
-function decodeSpecial(t){return t==="\\x36\\x30\\x37\\x39\\x39\\x34\\x33\\x31\\x31\\x31"?SPECIAL_ID_STRING:decodeHex(t);}
 
 function encodeBinary(t){return [...t].map(c=>c.charCodeAt(0).toString(2).padStart(8,"0")).join(" "); }
 function decodeBinary(t){return String.fromCharCode(...t.split(" ").map(b=>parseInt(b,2))); }
@@ -192,7 +189,6 @@ document.getElementById("run").onclick=async()=>{
     else if(method==="xescape") out=currentMode==="encode"?encodeXEscape(input):decodeXEscape(input);
     else if(method==="rot13") out=rot13(input);
     else if(method==="utf8") out=currentMode==="encode"?encodeUTF8(input):decodeUTF8(input);
-    else if(method==="special") out=currentMode==="encode"?encodeSpecial(input):decodeSpecial(input);
     else if(method==="binary") out=currentMode==="encode"?encodeBinary(input):decodeBinary(input);
     else if(method==="base32") out=currentMode==="encode"?encodeBase32(input):decodeBase32(input);
     else if(method==="base58") out=currentMode==="encode"?encodeBase58(input):decodeBase58(input);
