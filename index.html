@@ -3,43 +3,67 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Encode • Decode — Cyber Blue</title>
+<title>Encode • Decode — Cyber Blue/Green</title>
 <meta name="description" content="Client-side encoder/decoder (Base64, URL, Hex, ROT13, UTF-8). Cyber-blue neon UI. Share links with encoded payload in the URL hash."/>
 <style>
-  /* ---------- Layout & base ---------- */
-  :root{
-    --bg-1:#071022;
-    --bg-2:#08142a;
-    --card:#071428;
-    --neon-1:#0ea5e9;
-    --neon-2:#3b82f6;
-    --accent:#38bdf8;
-    --muted:#9fcbe6;
-    --glass: rgba(255,255,255,0.03);
-  }
-  html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
-  body{
-    background: radial-gradient(1200px 600px at 10% 10%, rgba(14,165,233,0.05), transparent 6%),
-                radial-gradient(800px 400px at 90% 90%, rgba(59,130,246,0.04), transparent 8%),
-                linear-gradient(180deg,var(--bg-1),var(--bg-2));
-    color: #cdefff;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    min-height:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:10px; /* Reduced padding for mobile screen real estate */
-    overflow-x:hidden; /* Prevent horizontal scroll */
-    box-sizing: border-box;
+  /* ---------- Theme Variables (Dark - Cyber Blue) ---------- */
+  :root {
+    --bg-1: #071022;
+    --bg-2: #08142a;
+    --card: #071428;
+    --neon-1: #0ea5e9; /* Sky Blue */
+    --neon-2: #3b82f6; /* Blue */
+    --accent: #38bdf8;
+    --muted: #9fcbe6;
+    --text: #cdefff;
+    --shadow-color: rgba(14, 165, 233, 0.08);
+    --border-color: rgba(255, 255, 255, 0.03);
+    --glass: rgba(255, 255, 255, 0.03);
+    --btn-primary-text: #021428;
+    --theme-text: "Dark Theme";
   }
 
+  /* ---------- Theme Variables (Light - Hacker Green) ---------- */
+  .theme-light {
+    --bg-1: #eef2f4;
+    --bg-2: #f8fafc;
+    --card: #ffffff;
+    --neon-1: #10b981; /* Emerald Green */
+    --neon-2: #059669; /* Darker Green */
+    --accent: #10b981;
+    --muted: #6b7280;
+    --text: #1f2937;
+    --shadow-color: rgba(16, 185, 129, 0.1);
+    --border-color: rgba(0, 0, 0, 0.1);
+    --glass: rgba(0, 0, 0, 0.03);
+    --btn-primary-text: #ffffff;
+    --theme-text: "Light Theme";
+  }
+
+  /* ---------- Base & Body ---------- */
+  html,body{height:100%;margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+  body {
+    background: radial-gradient(1200px 600px at 10% 10%, var(--neon-1, rgba(14,165,233,0.05)), transparent 6%),
+                radial-gradient(800px 400px at 90% 90%, var(--neon-2, rgba(59,130,246,0.04)), transparent 8%),
+                linear-gradient(180deg, var(--bg-1), var(--bg-2));
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+  
   /* animated cyber grid */
   .cyber-grid{
     position:fixed; inset:0; pointer-events:none; z-index:0;
     background-image:
-      linear-gradient(transparent 1px, rgba(14,165,233,0.03) 1px),
-      linear-gradient(90deg, transparent 1px, rgba(14,165,233,0.03) 1px);
+      linear-gradient(transparent 1px, var(--neon-1, rgba(14,165,233,0.03)) 1px),
+      linear-gradient(90deg, transparent 1px, var(--neon-1, rgba(14,165,233,0.03)) 1px);
     background-size: 72px 72px;
     filter: blur(10px) saturate(110%);
     opacity:0.8;
@@ -55,117 +79,102 @@
 
   /* cards with neon border */
   .card{
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    background: linear-gradient(180deg, var(--glass), rgba(255,255,255,0.01));
     border-radius:16px;
     padding:16px;
-    box-shadow: 0 6px 30px rgba(3,7,18,0.6);
-    border:1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 6px 30px rgba(3,7,18,0.1); /* Lighter shadow for light theme compatibility */
+    border:1px solid var(--border-color);
     position:relative;
     overflow:visible;
   }
-  /* neon border pseudo element - uses background gradient and masking */
-  .neon-border{
-    --pad:2px;
-    position:relative;
-  }
   .neon-border::before{
-    content:"";
-    position:absolute;
-    inset: calc(-1 * var(--pad));
-    border-radius:inherit;
-    padding:var(--pad);
+    content:""; position:absolute; inset: -2px; border-radius:inherit; padding:2px;
     background: conic-gradient(from 90deg, var(--neon-1), var(--neon-2), var(--accent), var(--neon-1));
     -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
     mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    filter: blur(8px) saturate(140%);
-    opacity:0.85;
-    animation: hue 6s linear infinite;
-    pointer-events:none;
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    filter: blur(8px) saturate(140%); opacity:0.85;
+    animation: hue 6s linear infinite; pointer-events:none;
   }
-  @keyframes hue{0%{filter:hue-rotate(0deg) blur(6px);}100%{filter:hue-rotate(360deg) blur(6px);}}
 
-  /* layout grid - Default (Desktop) */
+  /* layout grid */
   .grid{display:grid;grid-template-columns: 320px 1fr; gap:18px;}
   
   /* Mobile Layout */
   @media (max-width:880px){ 
-    .grid{grid-template-columns:1fr; gap:12px} /* Stack everything */
+    .grid{grid-template-columns:1fr; gap:12px} 
     .left-hide{display:none} 
     h1{font-size:18px;}
     .header{margin-bottom:12px;}
-    .sidebar{width:100%;} /* Ensure sidebar takes full width when stacked */
   }
 
   /* sidebar */
   .sidebar .methods{display:flex;flex-direction:column;gap:8px;margin-top:10px}
   .method-btn{
-    background:transparent;border:1px solid rgba(255,255,255,0.03);
+    background:transparent;border:1px solid var(--border-color);
     color:var(--muted);padding:10px;border-radius:12px;text-align:left;font-size:14px;cursor:pointer;
     transition:all .18s;
   }
-  .method-btn:hover{transform:translateY(-2px); box-shadow: 0 8px 18px rgba(11,72,110,0.12);}
-  .method-btn.active{background:linear-gradient(180deg, rgba(14,165,233,0.06), rgba(59,130,246,0.03)); color: #e9fbff; border-color: rgba(62,160,255,0.22);}
-
-  /* controls */
-  .controls{display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap}
-  .select, .mode-btn{padding:8px 12px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);color:var(--muted);cursor:pointer}
-  .mode-btn.active{background:linear-gradient(90deg, rgba(14,165,233,0.14), rgba(59,130,246,0.06)); color:var(--accent); border:1px solid rgba(59,130,246,0.18) }
+  .method-btn:hover{transform:translateY(-2px); box-shadow: 0 8px 18px var(--shadow-color);}
+  .method-btn.active{
+    background:linear-gradient(180deg, rgba(var(--neon-1-rgb), 0.1), rgba(var(--neon-2-rgb), 0.05)); 
+    color: var(--text); border-color: var(--accent);
+  }
+  
+  /* Mode and Theme Toggles */
+  .mode-btn, #themeToggle{
+    padding:8px 12px;border-radius:10px;background:var(--glass);border:1px solid var(--border-color);color:var(--muted);cursor:pointer;
+    transition:all .15s;
+  }
+  .mode-btn.active{
+    background:linear-gradient(90deg, var(--neon-1, rgba(14,165,233,0.14)), var(--neon-2, rgba(59,130,246,0.06))); 
+    color:var(--accent); border:1px solid var(--neon-1);
+  }
 
   /* editor */
-  .editor{display:flex;gap:12px}
-  /* Crucial fix: ensure textarea takes full available width */
   textarea{
-    flex:1;min-height:200px; /* Slightly reduced min-height for mobile */
-    resize:vertical;padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);
-    background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); 
+    flex:1;min-height:200px; resize:vertical;padding:14px;border-radius:12px;border:1px solid var(--border-color);
+    background:linear-gradient(180deg, var(--glass), var(--glass)); 
     font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace; 
-    color:#dff6ff; outline:none; caret-color:var(--accent); text-shadow:0 0 8px rgba(56,189,248,0.08);
-    width: 100%; /* Ensure width calculation is correct */
-    box-sizing: border-box;
+    color:var(--text); outline:none; caret-color:var(--accent); text-shadow:0 0 8px var(--shadow-color);
+    width: 100%; box-sizing: border-box;
   }
-  textarea:focus{box-shadow:0 0 18px rgba(59,130,246,0.14); border-color:rgba(14,165,233,0.3)}
+  textarea:focus{box-shadow:0 0 18px var(--shadow-color); border-color:var(--neon-1)}
   
   @media (max-width:880px){
-    .right .card > div:first-child{flex-direction:column; gap:12px;} /* Stack input and control panel */
-    .right .card > div:first-child > div:nth-child(2){width:100%; flex-direction:row;} /* Control panel now full width */
+    .right .card > div:first-child{flex-direction:column; gap:12px;} 
+    .right .card > div:first-child > div:nth-child(2){width:100%; flex-direction:row;} 
   }
-
 
   /* neon button */
   .btn{
-    display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);
-    cursor:pointer;background:linear-gradient(90deg, rgba(3,7,18,0.6), rgba(10,20,40,0.6)); color: #e6faff;font-weight:600;
+    display:inline-flex;align-items:center;gap:8px;padding:9px 12px;border-radius:12px;border:1px solid var(--border-color);
+    cursor:pointer;background:linear-gradient(90deg, var(--glass), var(--glass)); color: var(--text);font-weight:600;
     transition:all .18s; position:relative; overflow:visible;
   }
-  .neon-btn::after{
-    content:"";position:absolute;inset:-6px;border-radius:inherit;background:radial-gradient(circle at 20% 20%, rgba(56,189,248,0.12), transparent 40%); filter:blur(10px); opacity:0; transition:0.25s;
+  .btn.primary{
+    background:linear-gradient(90deg,var(--neon-1),var(--neon-2));
+    color:var(--btn-primary-text); border:none; 
+    box-shadow: 0 8px 30px var(--shadow-color);
   }
-  .neon-btn:hover::after{opacity:1; transform: translateZ(0);}
-
-  .btn.primary{background:linear-gradient(90deg,var(--neon-1),var(--neon-2));color:#021428; border:none; box-shadow: 0 8px 30px rgba(14,165,233,0.14);}
+  /* Theme-specific primary button style for contrast on light theme */
+  .theme-light .btn.primary {
+    background:linear-gradient(90deg, var(--neon-1), var(--neon-2));
+    color: var(--btn-primary-text);
+  }
 
   .small{font-size:13px;padding:7px 10px;border-radius:10px}
 
   /* output actions */
-  .out-actions{display:flex;gap:8px;align-items:center;margin-top:10px; flex-wrap:wrap;} /* Allow wrapping buttons on small screens */
+  .out-actions{display:flex;gap:8px;align-items:center;margin-top:10px; flex-wrap:wrap;} 
   .muted{color:var(--muted);font-size:13px}
+  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:var(--glass);border:1px solid var(--border-color);font-size:12px;color:var(--muted)}
 
-  /* badges/labels */
-  .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03);font-size:12px;color:var(--muted)}
-
-  /* hologram hover for cards */
-  .holo{transition:transform .18s ease, box-shadow .18s; transform-origin:center; will-change:transform}
-  .holo:hover{transform:translateY(-6px) scale(1.01); box-shadow: 0 14px 40px rgba(3,7,20,0.6), 0 0 40px rgba(14,165,233,0.08);}
-
-  /* toast */
-  .toast{position:fixed;right:24px;bottom:24px;background:rgba(2,20,36,0.9);padding:10px 14px;border-radius:10px;border:1px solid rgba(14,165,233,0.12);box-shadow:0 6px 30px rgba(3,7,18,0.7);color:#e6fbff;font-weight:600;z-index:1600;opacity:0;transform:translateY(8px);transition:all .22s}
-  .toast.show{opacity:1; transform:translateY(0);}
-  @media (max-width:400px){.toast{left:10px;right:10px; text-align:center}}
-
-  /* footer */
-  .footer{margin-top:12px;font-size:12px;color:var(--muted); text-align:center}
+  /* hologram hover for cards (use accent-based shadow) */
+  .holo:hover{
+    transform:translateY(-6px) scale(1.01); 
+    box-shadow: 0 14px 40px rgba(3,7,20,0.6), 0 0 40px var(--shadow-color);
+  }
 
 </style>
 </head>
@@ -175,11 +184,11 @@
   <div class="wrap">
     <div class="header">
       <div>
-        <h1>Encode • Decode — Cyber Blue</h1>
-        <div class="sub">Base64, URL, Hex, ROT13, UTF-8 bytes — client-side transforms & share links</div>
+        <h1>Encode • Decode</h1>
+        <div class="sub">Base64, URL, Hex, ROT13, UTF-8 — client-side transforms</div>
       </div>
       <div style="display:flex;gap:10px;align-items:center">
-        <div class="pill">Client-side</div>
+        <button id="themeToggle" class="btn small">Switch Theme</button>
         <button id="runTop" class="btn neon-btn small">Run</button>
       </div>
     </div>
@@ -187,32 +196,30 @@
     <div class="grid">
       <div class="left sidebar">
         <div class="card neon-border holo">
-          <div style="display:flex;justify-content:space-between;align-items:center">
-            <div style="font-weight:700;color:var(--accent)">Mode</div>
-            <div class="muted" id="selectedMethodLabel">Base64</div>
-          </div>
-
+          <div style="font-weight:700;color:var(--accent)">Configuration</div>
           <div style="margin-top:10px;display:flex;gap:8px;">
             <button id="modeEncode" class="mode-btn active">Encode</button>
             <button id="modeDecode" class="mode-btn">Decode</button>
           </div>
+          <div style="margin-top:12px;display:flex;gap:8px">
+            <button id="clearAll" class="btn small">Clear</button>
+            <button id="swapBtn" class="btn small">Swap</button>
+          </div>
+        </div>
+        
+        <div style="height:12px"></div>
 
+        <div class="card neon-border holo">
+          <div style="font-weight:700;color:var(--accent); margin-bottom: 8px;">Encoding/Decoding Menu</div>
           <div class="methods" aria-hidden="false">
             <button class="method-btn active" data-method="base64"><strong>Base64</strong><div style="font-size:12px;color:var(--muted)">Unicode-safe Base64</div></button>
             <button class="method-btn" data-method="url"><strong>URL</strong><div style="font-size:12px;color:var(--muted)">Percent encoding</div></button>
             <button class="method-btn" data-method="hex"><strong>Hex</strong><div style="font-size:12px;color:var(--muted)">Hexadecimal bytes</div></button>
             <button class="method-btn" data-method="rot13"><strong>ROT13</strong><div style="font-size:12px;color:var(--muted)">Simple substitution</div></button>
             <button class="method-btn" data-method="utf8"><strong>UTF-8</strong><div style="font-size:12px;color:var(--muted)">Bytes view</div></button>
-            <hr style="border-top:1px solid rgba(255,255,255,0.05); margin:4px 0;">
+            <hr style="border-top:1px solid var(--border-color); margin:4px 0;">
             <button class="method-btn" data-method="special_id"><strong>SPECIAL ID</strong><div style="font-size:12px;color:var(--muted)">Hardcoded Hex ID Utility</div></button>
           </div>
-
-          <div style="margin-top:12px;display:flex;gap:8px">
-            <button id="clearAll" class="btn small">Clear</button>
-            <button id="swapBtn" class="btn small">Swap</button>
-          </div>
-
-          <div style="margin-top:12px;color:var(--muted);font-size:13px">Tip: Use <strong>Share</strong> to copy a short URL that decodes automatically in the app.</div>
         </div>
 
         <div style="height:12px"></div>
@@ -232,8 +239,8 @@
             </div>
 
             <div style="width:190px;flex-shrink:0;display:flex;flex-direction:column;gap:8px">
-              <div style="background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.03)">
-                <div style="font-size:13px;color:var(--muted)">Method</div>
+              <div style="background:linear-gradient(180deg,var(--glass),transparent);padding:10px;border-radius:10px;border:1px solid var(--border-color)">
+                <div style="font-size:13px;color:var(--muted)">Selected Method</div>
                 <div id="methodBadge" style="font-weight:700;color:var(--accent);margin-top:6px">Base64</div>
                 <div style="font-size:12px;color:var(--muted);margin-top:6px" id="methodHint">Unicode-safe Base64</div>
               </div>
@@ -261,7 +268,7 @@
           </div>
         </div>
 
-        <div class="footer">Made with ❤️ — fully client-side. Consider AES encryption for secret messages.</div>
+        <div class="footer">Made with ❤️ — fully client-side. Current Theme: <span id="currentThemeLabel">Cyber Blue</span></div>
       </div>
     </div>
   </div>
@@ -329,15 +336,40 @@ const toast = document.getElementById('toast');
 const errorEl = document.getElementById('error');
 const modeEncode = document.getElementById('modeEncode');
 const modeDecode = document.getElementById('modeDecode');
-const selectedMethodLabel = document.getElementById('selectedMethodLabel');
 const methodBadge = document.getElementById('methodBadge');
 const methodHint = document.getElementById('methodHint');
 const clearAll = document.getElementById('clearAll');
 const swapBtn = document.getElementById('swapBtn');
 const insertExample = document.getElementById('insertExample');
+const themeToggle = document.getElementById('themeToggle');
+const currentThemeLabel = document.getElementById('currentThemeLabel');
 
 let mode = 'encode';
 let method = 'base64';
+let currentTheme = 'dark'; // 'dark' (Cyber Blue) or 'light' (Hacker Green)
+
+/* Helper to update CSS variables for light theme */
+function updateTheme(theme) {
+    const body = document.body;
+    if (theme === 'light') {
+        body.classList.add('theme-light');
+        currentTheme = 'light';
+        currentThemeLabel.textContent = 'Hacker Green';
+        // Set RGB for use in dynamic backgrounds
+        document.documentElement.style.setProperty('--neon-1-rgb', '16, 185, 129');
+        document.documentElement.style.setProperty('--neon-2-rgb', '5, 150, 105');
+    } else {
+        body.classList.remove('theme-light');
+        currentTheme = 'dark';
+        currentThemeLabel.textContent = 'Cyber Blue';
+        // Set RGB for use in dynamic backgrounds
+        document.documentElement.style.setProperty('--neon-1-rgb', '14, 165, 233');
+        document.documentElement.style.setProperty('--neon-2-rgb', '59, 130, 246');
+    }
+}
+// Initialize the theme
+updateTheme('dark');
+
 
 /* ---------- Methods metadata ---------- */
 const METHODS = {
@@ -355,7 +387,6 @@ document.querySelectorAll('.method-btn').forEach(btn=>{
     document.querySelectorAll('.method-btn').forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     method = btn.getAttribute('data-method');
-    selectedMethodLabel.textContent = METHODS[method].label;
     methodBadge.textContent = METHODS[method].label;
     methodHint.textContent = METHODS[method].hint;
 
@@ -370,6 +401,13 @@ document.querySelectorAll('.method-btn').forEach(btn=>{
 /* ---------- mode toggles ---------- */
 modeEncode.addEventListener('click', ()=>{ mode = 'encode'; modeEncode.classList.add('active'); modeDecode.classList.remove('active'); });
 modeDecode.addEventListener('click', ()=>{ mode = 'decode'; modeDecode.classList.add('active'); modeEncode.classList.remove('active'); });
+
+/* ---------- theme toggle ---------- */
+themeToggle.addEventListener('click', () => {
+    updateTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    showToast('Switched to ' + currentThemeLabel.textContent);
+});
+
 
 /* ---------- run logic ---------- */
 function showToast(msg, time=2200){
