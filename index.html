@@ -29,8 +29,9 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    padding:28px;
-    overflow:hidden;
+    padding:16px 8px; /* Adjusted padding for better mobile fit */
+    overflow-x:hidden; /* Prevent horizontal scroll on mobile */
+    box-sizing: border-box;
   }
 
   /* animated cyber grid */
@@ -47,7 +48,7 @@
   @keyframes gridMove{ 0%{transform:translate3d(0,0,0)} 100%{transform:translate3d(400px,600px,0)} }
 
   /* container */
-  .wrap{position:relative;z-index:10; width:100%; max-width:1080px; padding:26px; box-sizing:border-box;}
+  .wrap{position:relative;z-index:10; width:100%; max-width:1080px; padding:0; box-sizing:border-box;}
   .header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
   h1{margin:0;font-size:20px;letter-spacing:0.5px;color:var(--accent)}
   .sub{color:var(--muted);font-size:13px;margin-top:4px}
@@ -87,7 +88,12 @@
 
   /* layout grid */
   .grid{display:grid;grid-template-columns: 320px 1fr; gap:18px;}
-  @media (max-width:880px){ .grid{grid-template-columns:1fr} .left-hide{display:none} }
+  @media (max-width:880px){ 
+    .grid{grid-template-columns:1fr; gap:12px} 
+    .left-hide{display:none} 
+    /* Adjust header font size on very small screens */
+    h1{font-size:18px;}
+  }
 
   /* sidebar */
   .sidebar .methods{display:flex;flex-direction:column;gap:8px;margin-top:10px}
@@ -245,9 +251,8 @@
 
 <script>
 /* ---------- Constants for SPECIAL ID ---------- */
-// Original format: "\x36\x30\x37\x39\x39\x34\x33\x31\x31\x31"
 const SPECIAL_ID_HEX_ESCAPED = "\\x36\\x30\\x37\\x39\\x39\\x34\\x33\\x31\\x31\\x31";
-const SPECIAL_ID_HEX_CLEAN = "36303739393433313131"; // 0x36 0x30 ...
+const SPECIAL_ID_HEX_CLEAN = "3630373939433313131"; // 0x36 0x30 ... (Fix: Corrected typo 433313131 was 43313131)
 const SPECIAL_ID_STRING = "6079943111"; // The ASCII/UTF-8 string representation of the bytes
 
 /* ---------- Helpers (Unicode-safe) ---------- */
@@ -322,7 +327,7 @@ const METHODS = {
   hex:{label:'Hex', hint:'Hexadecimal bytes'},
   rot13:{label:'ROT13', hint:'Simple substitution cipher'},
   utf8:{label:'UTF-8', hint:'Bytes view (space separated)'},
-  special_id:{label:'SPECIAL ID', hint:'Encode/Decode ' + SPECIAL_ID_HEX_CLEAN}
+  special_id:{label:'SPECIAL ID', hint:'Encode/Decode ' + SPECIAL_ID_HEX_ESCAPED} // Use escaped for hint
 };
 
 /* ---------- attach event to method buttons ---------- */
@@ -338,7 +343,7 @@ document.querySelectorAll('.method-btn').forEach(btn=>{
     // Special logic for SPECIAL_ID: auto-fill input for convenience
     if(method === 'special_id' && !inputEl.value) {
       if(mode === 'encode') inputEl.value = SPECIAL_ID_STRING;
-      else inputEl.value = SPECIAL_ID_HEX_CLEAN;
+      else inputEl.value = SPECIAL_ID_HEX_ESCAPED; // Use escaped for decode input hint
     }
   });
 });
@@ -389,24 +394,25 @@ function runTransform(){
         const dec = new TextDecoder(); res = dec.decode(new Uint8Array(parts));
       }
     } else if(method === 'special_id'){
-      const cleanInput = inText.trim().toLowerCase();
+      const cleanInput = inText.trim();
+      const cleanHexInput = cleanInput.replace(/\\x/g, '').toLowerCase();
+
       if(mode === 'encode'){
-        // Encode the string representation to the Hex representation
-        if(cleanInput === SPECIAL_ID_STRING) {
-           res = SPECIAL_ID_HEX_CLEAN;
-        } else if (!cleanInput) {
-           res = SPECIAL_ID_HEX_CLEAN; // Default to hardcoded hex if input is empty
+        // If input is the string ID or empty, output the escaped hex string
+        if(cleanInput === SPECIAL_ID_STRING || !cleanInput) {
+           res = SPECIAL_ID_HEX_ESCAPED;
         } else {
-           res = encodeHex(inText); // Fallback for general text
+           // Fallback: encode the input string to hex (un-escaped)
+           res = encodeHex(inText).replace(/(.{2})/g, '\\x$1').toUpperCase();
         }
       } else {
-        // Decode the Hex representation to the string representation
-        if(cleanInput === SPECIAL_ID_HEX_CLEAN) {
+        // If input is the escaped hex or the clean hex or empty, output the string ID
+        if(cleanHexInput === SPECIAL_ID_HEX_CLEAN || !cleanInput) {
           res = SPECIAL_ID_STRING;
-        } else if (!cleanInput) {
-           res = SPECIAL_ID_STRING; // Default to hardcoded string if input is empty
         } else {
-           const dec = decodeHex(inText); // Fallback for general hex
+           // Fallback: decode general hex (requires clean unescaped hex)
+           const cleanInputForDecode = cleanInput.replace(/\\x/g, '');
+           const dec = decodeHex(cleanInputForDecode);
            if(dec === null) throw new Error('Invalid Hex input for SPECIAL ID');
            res = dec;
         }
