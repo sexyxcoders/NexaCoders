@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Nexa Coders – Admin Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+:root{
+  --neon:#00f7ff;
+  --green:#00ff9c;
+}
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Segoe UI,system-ui;
+  background:radial-gradient(circle at top,#0b1228,#02040a);
+  color:#fff;
+}
+
+header{
+  padding:20px;
+  text-align:center;
+  font-size:1.8rem;
+  color:var(--neon);
+  text-shadow:0 0 25px var(--neon);
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+
+.login, .dashboard{
+  background:rgba(10,20,45,.65);
+  backdrop-filter:blur(14px);
+  border-radius:18px;
+  padding:25px;
+  border:1px solid rgba(0,247,255,.35);
+  box-shadow:0 0 35px rgba(0,247,255,.2);
+}
+
+.dashboard{display:none}
+
+input,textarea{
+  width:100%;
+  padding:14px;
+  margin-top:12px;
+  background:#050a18;
+  border:1px solid rgba(0,247,255,.45);
+  border-radius:12px;
+  color:#fff;
+}
+
+button{
+  padding:12px 18px;
+  margin-top:14px;
+  border:none;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:700;
+  background:linear-gradient(90deg,var(--neon),var(--green));
+  box-shadow:0 0 25px rgba(0,247,255,.7);
+}
+
+button.danger{
+  background:#ff3b3b;
+  box-shadow:none;
+  color:#fff;
+}
+
+.feedback{
+  margin-top:20px;
+  padding:16px;
+  border-radius:14px;
+  background:#050a18;
+  border:1px solid rgba(0,247,255,.25);
+}
+
+.feedback b{color:var(--neon)}
+
+.feedback small a{
+  color:#8adfff;
+  text-decoration:none;
+}
+
+.reply{
+  margin-top:10px;
+  padding-left:12px;
+  border-left:3px solid var(--green);
+  color:var(--green);
+}
+
+.actions{
+  margin-top:12px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+</style>
+</head>
+
+<body>
+
+<header>🧑‍💻 Nexa Coders – Admin Dashboard</header>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div class="login" id="loginBox">
+  <h3>Admin Login</h3>
+  <input id="password" type="password" placeholder="Admin Password">
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dashboard" id="dashboard">
+  <h3>All Feedbacks</h3>
+  <div id="feedbacks"></div>
+</div>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+/* 🔴 FIREBASE CONFIG */
+firebase.initializeApp({
+  apiKey:"YOUR_FIREBASE_API_KEY",
+  authDomain:"YOUR_PROJECT.firebaseapp.com",
+  projectId:"YOUR_PROJECT_ID"
+});
+const db=firebase.firestore();
+
+/* 🔐 ADMIN PASSWORD */
+const ADMIN_PASSWORD="nexa@admin";
+
+function login(){
+  if(document.getElementById("password").value===ADMIN_PASSWORD){
+    document.getElementById("loginBox").style.display="none";
+    document.getElementById("dashboard").style.display="block";
+    loadFeedbacks();
+  } else alert("Wrong password");
+}
+
+function loadFeedbacks(){
+db.collection("feedbacks").orderBy("time","desc")
+.onSnapshot(s=>{
+  feedbacks.innerHTML="";
+  s.forEach(d=>{
+    const f=d.data();
+    feedbacks.innerHTML+=`
+    <div class="feedback">
+      <b>${f.name}</b>
+      ${f.telegram?`<small> • <a target="_blank" href="https://t.me/${f.telegram.replace("@","")}">${f.telegram}</a></small>`:""}
+      <div style="margin-top:6px">${f.message}</div>
+
+      ${f.reply?`<div class="reply">Reply: ${f.reply}</div>`:""}
+
+      <div class="actions">
+        <button onclick="reply('${d.id}')">Reply</button>
+        <button class="danger" onclick="del('${d.id}')">Delete</button>
+      </div>
+    </div>`;
+  });
+});
+}
+
+function reply(id){
+  const r=prompt("Type reply");
+  if(r)db.collection("feedbacks").doc(id).update({reply:r});
+}
+
+function del(id){
+  if(confirm("Delete this feedback?"))
+    db.collection("feedbacks").doc(id).delete();
+}
+</script>
+
+</body>
+</html>
