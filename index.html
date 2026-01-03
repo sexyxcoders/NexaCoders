@@ -2,65 +2,127 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Nexa Coders – AI Feedback</title>
+<title>Nexa Coders – Feedback</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
+:root {
+  --neon: #00f7ff;
+  --green: #00ff9c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
-  font-family: Segoe UI, sans-serif;
-  background: radial-gradient(circle at top, #0b1228, #000);
+  font-family: "Segoe UI", system-ui;
+  background: radial-gradient(circle at top, #0b1228, #02040a);
   color: #fff;
 }
+
 .container {
-  max-width: 650px;
+  max-width: 700px;
   margin: auto;
-  padding: 20px;
+  padding: 24px;
 }
+
 h1 {
   text-align: center;
-  color: #00f7ff;
-  text-shadow: 0 0 20px #00f7ff;
+  font-size: 2.2rem;
+  color: var(--neon);
+  text-shadow: 0 0 25px var(--neon);
+  margin-bottom: 30px;
 }
+
 .box {
-  background: rgba(10, 20, 45, 0.9);
-  border: 1px solid #00f7ff44;
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 20px;
+  position: relative;
+  background: rgba(10, 20, 45, 0.65);
+  backdrop-filter: blur(12px);
+  border-radius: 16px;
+  padding: 22px;
+  margin-bottom: 22px;
+  box-shadow: 0 0 30px rgba(0, 247, 255, 0.15);
+  border: 1px solid rgba(0, 247, 255, 0.25);
 }
+
+.box::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: 16px;
+  background: linear-gradient(120deg, transparent, var(--neon), transparent);
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+h3 {
+  margin: 0 0 10px;
+  color: var(--green);
+}
+
 input, textarea {
   width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  background: #050a18;
-  border: 1px solid #00f7ff55;
-  border-radius: 8px;
+  padding: 14px;
+  margin-top: 12px;
+  background: rgba(5, 10, 25, 0.9);
+  border: 1px solid rgba(0, 247, 255, 0.4);
+  border-radius: 10px;
   color: #fff;
+  outline: none;
 }
+
+input:focus, textarea:focus {
+  border-color: var(--neon);
+  box-shadow: 0 0 10px rgba(0, 247, 255, 0.4);
+}
+
 button {
   width: 100%;
-  padding: 12px;
-  margin-top: 12px;
-  background: linear-gradient(90deg, #00f7ff, #00ff9c);
+  padding: 14px;
+  margin-top: 16px;
+  border-radius: 12px;
   border: none;
-  border-radius: 8px;
-  font-weight: bold;
+  font-weight: 700;
   cursor: pointer;
+  color: #000;
+  background: linear-gradient(90deg, var(--neon), var(--green));
+  box-shadow: 0 0 20px rgba(0, 247, 255, 0.5);
+  transition: transform .2s, box-shadow .2s;
 }
-.feedback {
-  border-bottom: 1px solid #00f7ff33;
-  padding: 10px 0;
+
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 35px rgba(0, 247, 255, 0.8);
 }
-.reply {
-  color: #00ff9c;
-  font-size: 14px;
-  margin-top: 5px;
-}
+
 .admin-btn {
   background: transparent;
-  border: 1px solid #00f7ff;
-  color: #00f7ff;
+  color: var(--neon);
+  border: 1px solid var(--neon);
+  box-shadow: none;
+}
+
+.feedback {
+  padding: 14px 0;
+  border-bottom: 1px dashed rgba(0, 247, 255, 0.3);
+}
+
+.feedback:last-child {
+  border-bottom: none;
+}
+
+.feedback b {
+  color: var(--neon);
+}
+
+.reply {
+  margin-top: 6px;
+  padding-left: 10px;
+  border-left: 2px solid var(--green);
+  color: var(--green);
+  font-size: 14px;
 }
 </style>
 </head>
@@ -73,7 +135,7 @@ button {
 <h3>Send Feedback</h3>
 <input id="name" placeholder="Your Name">
 <textarea id="message" placeholder="Your Feedback"></textarea>
-<button onclick="sendFeedback()">Submit</button>
+<button onclick="sendFeedback()">Submit Feedback</button>
 </div>
 
 <div class="box">
@@ -81,7 +143,7 @@ button {
 </div>
 
 <div class="box">
-<h3>Feedback & Replies</h3>
+<h3>Community Feedback</h3>
 <div id="feedbacks"></div>
 </div>
 </div>
@@ -100,25 +162,21 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* 🔐 ADMIN PASSWORD */
+/* 🔐 ADMIN */
 const ADMIN_PASSWORD = "nexa@admin";
 let isAdmin = false;
 
-/* 🔔 TELEGRAM CONFIG */
+/* 🔔 TELEGRAM */
 const TELEGRAM_BOT_TOKEN = "YOUR_TELEGRAM_BOT_TOKEN";
 const TELEGRAM_CHAT_ID = "YOUR_CHAT_ID";
-
-/* 🤖 OPENAI CONFIG */
-const OPENAI_API_KEY = "YOUR_OPENAI_API_KEY";
 
 function adminLogin() {
   const pass = prompt("Admin Password");
   if (pass === ADMIN_PASSWORD) {
     isAdmin = true;
     alert("Admin Mode Enabled");
-    loadFeedbacks();
   } else {
-    alert("Wrong password");
+    alert("Wrong Password");
   }
 }
 
@@ -127,7 +185,7 @@ async function sendFeedback() {
   const message = document.getElementById("message").value.trim();
   if (!name || !message) return alert("Fill all fields");
 
-  const doc = await db.collection("feedbacks").add({
+  await db.collection("feedbacks").add({
     name,
     message,
     reply: "",
@@ -135,76 +193,42 @@ async function sendFeedback() {
   });
 
   sendTelegram(name, message);
-  generateAIReply(doc.id, message);
-
   document.getElementById("message").value = "";
 }
 
-/* 🔔 TELEGRAM NOTIFICATION */
 function sendTelegram(name, message) {
-  const text = `🆕 New Feedback\n\n👤 ${name}\n💬 ${message}`;
   fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       chat_id: TELEGRAM_CHAT_ID,
-      text
+      text: `🆕 Nexa Coders Feedback\n\n👤 ${name}\n💬 ${message}`
     })
   });
 }
 
-/* 🤖 AI AUTO REPLY */
-async function generateAIReply(id, userMessage) {
-  const res = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + OPENAI_API_KEY
-    },
-    body: JSON.stringify({
-      model: "gpt-3.5-turbo",
-      messages: [
-        { role: "system", content: "You are Nexa Coders support. Be friendly and professional." },
-        { role: "user", content: userMessage }
-      ]
-    })
-  });
-
-  const data = await res.json();
-  const reply = data.choices?.[0]?.message?.content || "";
-
-  if (reply) {
-    db.collection("feedbacks").doc(id).update({ reply });
-  }
-}
-
-/* ✍️ MANUAL ADMIN REPLY */
 function manualReply(id) {
   const reply = prompt("Type reply");
   if (reply) db.collection("feedbacks").doc(id).update({ reply });
 }
 
-function loadFeedbacks() {
-  db.collection("feedbacks")
-    .orderBy("time", "desc")
-    .onSnapshot(snap => {
-      const div = document.getElementById("feedbacks");
-      div.innerHTML = "";
-      snap.forEach(doc => {
-        const d = doc.data();
-        div.innerHTML += `
-          <div class="feedback">
-            <b>${d.name}</b><br>
-            ${d.message}
-            ${d.reply ? `<div class="reply">Reply: ${d.reply}</div>` : ""}
-            ${isAdmin ? `<button onclick="manualReply('${doc.id}')">Reply</button>` : ""}
-          </div>
-        `;
-      });
+db.collection("feedbacks")
+  .orderBy("time", "desc")
+  .onSnapshot(snap => {
+    const div = document.getElementById("feedbacks");
+    div.innerHTML = "";
+    snap.forEach(doc => {
+      const d = doc.data();
+      div.innerHTML += `
+        <div class="feedback">
+          <b>${d.name}</b><br>
+          ${d.message}
+          ${d.reply ? `<div class="reply">Reply: ${d.reply}</div>` : ""}
+          ${isAdmin ? `<button onclick="manualReply('${doc.id}')">Reply</button>` : ""}
+        </div>
+      `;
     });
-}
-
-loadFeedbacks();
+  });
 </script>
 </body>
 </html>
