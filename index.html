@@ -1,664 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chhavi Singh - Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Rose Day My Love 🌹</title>
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            overflow-x: hidden;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Great+Vibes&display=swap" rel="stylesheet">
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+body{
+background:linear-gradient(-45deg,#ff9a9e,#fecfef,#ffb6c1,#ffd1dc);
+background-size:400% 400%;
+animation:bg 12s infinite;
+font-family:'Dancing Script',cursive;
+text-align:center;
+min-height:100vh;
+overflow:hidden;
+}
+@keyframes bg{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
 
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-        }
+/* Falling roses */
+.roses{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;}
+.rose{
+position:absolute;
+font-size:25px;
+animation:fall linear infinite;
+}
+@keyframes fall{
+0%{transform:translateY(-100px) rotate(0deg);}
+100%{transform:translateY(110vh) rotate(360deg);}
+}
 
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-            border-radius: 10px;
-        }
+/* Main Box */
+.container{
+position:relative;
+z-index:10;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+color:#800000;
+padding:20px;
+}
 
-        /* Header */
-        header {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            z-index: 1000;
-            padding: 1rem 0;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
+/* Glow Title */
+h1{
+font-size:3rem;
+text-shadow:0 0 15px #ff1493;
+animation:fadeIn 2s;
+}
 
-        nav {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 2rem;
-        }
+/* Love Message Box */
+.card{
+background:rgba(255,255,255,0.3);
+backdrop-filter:blur(12px);
+border-radius:20px;
+padding:25px;
+max-width:350px;
+box-shadow:0 10px 30px rgba(0,0,0,.2);
+animation:pop 1.5s ease;
+}
 
-        .logo {
-            font-family: 'Dancing Script', cursive;
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+/* Heart Animation */
+.heart{
+font-size:50px;
+animation:beat 1.5s infinite;
+}
+@keyframes beat{
+0%,100%{transform:scale(1);}
+50%{transform:scale(1.4);}
+}
 
-        .nav-links {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
+/* Fade & Pop */
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(-30px);}
+to{opacity:1;}
+}
+@keyframes pop{
+0%{transform:scale(0);}
+100%{transform:scale(1);}
+}
 
-        .nav-links a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            position: relative;
-            transition: color 0.3s ease;
-        }
+/* Button */
+button{
+padding:12px 25px;
+border:none;
+border-radius:25px;
+background:#ff1493;
+color:white;
+font-size:18px;
+cursor:pointer;
+margin-top:15px;
+box-shadow:0 5px 20px #ff69b4;
+transition:.3s;
+}
+button:hover{transform:scale(1.1);}
 
-        .nav-links a::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -5px;
-            left: 0;
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-            transition: width 0.3s ease;
-        }
-
-        .nav-links a:hover::after {
-            width: 100%;
-        }
-
-        .nav-links a:hover {
-            color: #667eea;
-        }
-
-        /* Hero Section */
-        .hero {
-            height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.05)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.1)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-            opacity: 0.3;
-        }
-
-        .hero-content {
-            max-width: 800px;
-            padding: 0 2rem;
-            position: relative;
-            z-index: 2;
-            animation: fadeInUp 1s ease-out;
-        }
-
-        .pfp {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            border: 5px solid rgba(255,255,255,0.3);
-            margin: 0 auto 2rem;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            transition: transform 0.3s ease;
-            object-fit: cover;
-        }
-
-        .pfp:hover {
-            transform: scale(1.05);
-        }
-
-        h1 {
-            font-size: 3.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            font-family: 'Dancing Script', cursive;
-        }
-
-        .subtitle {
-            font-size: 1.3rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
-        }
-
-        .cta-button {
-            display: inline-block;
-            padding: 1rem 2.5rem;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255,255,255,0.3);
-        }
-
-        .cta-button:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        /* Sections */
-        section {
-            padding: 100px 0;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding-left: 2rem;
-            padding-right: 2rem;
-        }
-
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 4rem;
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* About Section */
-        .about-grid {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        .about-image {
-            position: relative;
-        }
-
-        .about-image img {
-            width: 100%;
-            border-radius: 20px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
-        }
-
-        .stat {
-            text-align: center;
-            padding: 2rem;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 20px;
-            transition: transform 0.3s ease;
-        }
-
-        .stat:hover {
-            transform: translateY(-10px);
-        }
-
-        .stat-number {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        /* Skills Section */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .skill-card {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            border-top: 4px solid transparent;
-        }
-
-        .skill-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
-            border-top-color: #667eea;
-        }
-
-        .skill-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        /* Languages Section */
-        .languages {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            flex-wrap: wrap;
-            margin-top: 2rem;
-        }
-
-        .language {
-            padding: 1rem 2rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 50px;
-            font-weight: 500;
-            transition: transform 0.3s ease;
-        }
-
-        .language:hover {
-            transform: scale(1.05);
-        }
-
-        /* Projects Section */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 2rem;
-        }
-
-        .project-card {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .project-card:hover {
-            transform: translateY(-15px);
-            box-shadow: 0 30px 60px rgba(0,0,0,0.2);
-        }
-
-        .project-image {
-            height: 200px;
-            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-            color: rgba(255,255,255,0.8);
-        }
-
-        .project-content {
-            padding: 2rem;
-        }
-
-        /* Contact Section */
-        .contact-content {
-            max-width: 600px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .contact-links {
-            display: flex;
-            justify-content: center;
-            gap: 2rem;
-            margin-top: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .contact-link {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1.5rem 2.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .contact-link:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        /* Footer */
-        footer {
-            background: #1a1a1a;
-            color: white;
-            text-align: center;
-            padding: 3rem 0;
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease;
-        }
-
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-
-            h1 {
-                font-size: 2.5rem;
-            }
-
-            .about-grid {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .skills-grid, .projects-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Floating Elements */
-        .floating {
-            position: absolute;
-            animation: float 6s ease-in-out infinite;
-        }
-
-        .floating:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
-        .floating:nth-child(2) { top: 60%; right: 15%; animation-delay: 2s; }
-        .floating:nth-child(3) { bottom: 20%; left: 20%; animation-delay: 4s; }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
-        }
-    </style>
+/* Popup */
+.popup{
+position:fixed;
+top:0;left:0;
+width:100%;height:100%;
+background:rgba(0,0,0,.6);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:100;
+}
+.popup-box{
+background:white;
+padding:25px;
+border-radius:20px;
+font-size:22px;
+animation:pop 0.5s;
+}
+</style>
 </head>
+
 <body>
-    <!-- Header -->
-    <header>
-        <nav>
-            <div class="logo">Chhavi Singh</div>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#skills">Skills</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-content">
-            <img src="https://files.catbox.moe/nvzs4c.jpg" alt="Chhavi Singh" class="pfp">
-            <h1>Chhavi Singh</h1>
-            <p class="subtitle">17 | Aspiring Developer & Creative Soul</p>
-            <a href="#about" class="cta-button">Discover More</a>
-        </div>
-    </section>
+<div class="roses" id="roses"></div>
 
-    <!-- About Section -->
-    <section id="about" class="fade-in">
-        <h2 class="section-title">About Me</h2>
-        <div class="about-grid">
-            <div class="about-image">
-                <img src="https://files.catbox.moe/nvzs4c.jpg" alt="Chhavi Singh">
-                <div class="floating">🎵</div>
-                <div class="floating">✨</div>
-                <div class="floating">🎨</div>
-            </div>
-            <div>
-                <h3>Hey, I'm Chhavi! 👋</h3>
-                <p style="font-size: 1.1rem; margin-bottom: 2rem; color: #666;">
-                    A passionate 17-year-old from <strong>Ludhiana, Punjab</strong> born on <strong>27 August 2008</strong>. 
-                    I'm a perfect orator with an optimistic nature who loves blending creativity with technology.
-                </p>
-                <p style="font-size: 1.1rem; color: #666;">
-                    When I'm not coding, you'll find me doing calligraphy, singing my favorite songs 🎵, or mastering new languages. 
-                    I believe in turning ideas into beautiful realities!
-                </p>
-                
-                <div class="stats">
-                    <div class="stat">
-                        <div class="stat-number">17</div>
-                        <div>Years Young</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">Ludhiana</div>
-                        <div>Home City</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">5+</div>
-                        <div>Languages</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<div class="container">
+<h1>Happy Rose Day My Love 🌹</h1>
 
-    <!-- Skills Section -->
-    <section id="skills" class="fade-in" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
-        <h2 class="section-title">What I Love</h2>
-        <div class="skills-grid">
-            <div class="skill-card">
-                <div class="skill-icon"><i class="fas fa-pen-fancy"></i></div>
-                <h3>Calligraphy</h3>
-                <p>Creating beautiful hand-written art that tells stories through elegant strokes and creative expressions.</p>
-            </div>
-            <div class="skill-card">
-                <div class="skill-icon"><i class="fas fa-laptop-code"></i></div>
-                <h3>Coding</h3>
-                <p>Building beautiful websites and apps with HTML, CSS, JavaScript, and modern frameworks.</p>
-            </div>
-            <div class="skill-card">
-                <div class="skill-icon"><i class="fas fa-music"></i></div>
-                <h3>Singing</h3>
-                <p>Expressing emotions through melody 🎵 - from classic hits to contemporary favorites.</p>
-            </div>
-        </div>
+<div class="card">
+<div class="heart">❤️</div>
+<p>
+Like roses, my love for you is beautiful, pure, and forever.<br><br>
+You are my happiness, my peace, and my everything 💕
+</p>
 
-        <div style="text-align: center; margin-top: 4rem;">
-            <h3 style="font-size: 1.8rem; margin-bottom: 1rem;">Languages I Speak</h3>
-            <div class="languages">
-                <div class="language">🇮🇳 Punjabi</div>
-                <div class="language">🇮🇳 Hindi</div>
-                <div class="language">🇺🇸 English</div>
-                <div class="language">🇫🇷 French</div>
-                <div class="language">🇩🇪 German</div>
-            </div>
-        </div>
-    </section>
+<button onclick="showLove()">Click For Surprise 💌</button>
+</div>
+</div>
 
-    <!-- Projects Section -->
-    <section id="projects" class="fade-in">
-        <h2 class="section-title">Featured Projects</h2>
-        <div class="projects-grid">
-            <div class="project-card">
-                <div class="project-image">
-                    <i class="fas fa-palette"></i>
-                </div>
-                <div class="project-content">
-                    <h3>Calligraphy Gallery</h3>
-                    <p>A beautiful responsive website showcasing my calligraphy artwork with smooth animations and interactive elements.</p>
-                    <div style="margin-top: 1.5rem;">
-                        <span style="background: #667eea; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.9rem; margin-right: 0.5rem;">HTML/CSS/JS</span>
-                        <span style="background: #10b981; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.9rem;">Responsive</span>
-                    </div>
-                </div>
-            </div>
-            <div class="project-card">
-                <div class="project-image">
-                    <i class="fas fa-code"></i>
-                </div>
-                <div class="project-content">
-                    <h3>Portfolio Website</h3>
-                    <p>This very website! A modern, animated portfolio built with pure HTML, CSS, and JavaScript.</p>
-                    <div style="margin-top: 1.5rem;">
-                        <span style="background: #667eea; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.9rem; margin-right: 0.5rem;">Vanilla JS</span>
-                        <span style="background: #f59e0b; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.9rem;">Animations</span>
-                    </div>
-                </div>
-            </div>
-            <div class="project-card">
-                <div class="project-image">
-                    <i class="fas fa-microphone-alt"></i>
-                </div>
-                <div class="project-content">
-                    <h3>Music Haven</h3>
-                    <p>A music player web app with playlist management, audio visualization, and multilingual support.</p>
-                    <div style="margin-top: 1.5rem;">
-                        <span style="background: #ec4899; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.9rem; margin-right: 0.5rem;">Audio API</span>
-                        <span style="background: #06b6d4; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.9rem;">Visualizations</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+<!-- Popup Love Message -->
+<div class="popup" id="popup">
+<div class="popup-box">
+💖 I love you more than words can say.<br>
+You are my forever girl 🌹<br><br>
+<button onclick="hideLove()">Close</button>
+</div>
+</div>
 
-    <!-- Contact Section -->
-    <section id="contact" class="fade-in" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-        <div class="contact-content">
-            <h2 class="section-title" style="color: white;">Let's Connect!</h2>
-            <p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9;">
-                Ready to collaborate or just want to say hi? I'm always excited to connect with fellow creators!
-            </p>
-            <div class="contact-links">
-                <a href="mailto:chhavi@example.com" class="contact-link">
-                    <i class="fas fa-envelope"></i>
-                    Email
-                </a>
-                <a href="#" class="contact-link">
-                    <i class="fab fa-linkedin"></i>
-                    LinkedIn
-                </a>
-                <a href="#" class="contact-link">
-                    <i class="fab fa-github"></i>
-                    GitHub
-                </a>
-                <a href="#" class="contact-link">
-                    <i class="fab fa-instagram"></i>
-                    Instagram
-                </a>
-            </div>
-        </div>
-    </section>
+<script>
+// Falling Roses
+setInterval(()=>{
+let rose=document.createElement("div");
+rose.className="rose";
+rose.innerHTML="🌹";
+rose.style.left=Math.random()*100+"vw";
+rose.style.animationDuration=(Math.random()*3+4)+"s";
+document.getElementById("roses").appendChild(rose);
+setTimeout(()=>rose.remove(),8000);
+},300);
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 Chhavi Singh. Made with ❤️ in Ludhiana, Punjab. 🚀</p>
-    </footer>
+// Popup
+function showLove(){
+document.getElementById("popup").style.display="flex";
+}
+function hideLove(){
+document.getElementById("popup").style.display="none";
+}
+</script>
 
-    <script>
-        // Smooth scrolling for navigation links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Navbar background on scroll
-        window.addEventListener('scroll', () => {
-            const header = document.querySelector('header');
-            if (window.scrollY > 100) {
-                header.style.background = 'rgba(255, 255, 255, 0.98)';
-            } else {
-                header.style.background = 'rgba(255, 255, 255, 0.95)';
-            }
-        });
-
-        // Fade in animation on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.fade-in').forEach(el => {
-            observer.observe(el);
-        });
-
-        // Typing effect for hero subtitle (optional enhancement)
-        const subtitle = "17 | Aspiring Developer & Creative Soul";
-        let i = 0;
-        const typeWriter = () => {
-            if (i < subtitle.length) {
-                document.querySelector('.subtitle').textContent = subtitle.slice(0, i + 1);
-                i++;
-                setTimeout(typeWriter, 100);
-            }
-        };
-        setTimeout(typeWriter, 1000);
-    </script>
 </body>
 </html>
