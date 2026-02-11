@@ -21,6 +21,13 @@
         h1 {
             font-size: 2.5rem;
             margin-bottom: 20px;
+            font-weight: bold;
+            color: #ff6f61;
+        }
+        .message-container {
+            width: 90%;
+            max-width: 600px;
+            margin-top: 30px;
         }
         .message {
             font-size: 1.5rem;
@@ -28,7 +35,7 @@
             overflow: hidden;
             border-right: .15em solid #ff6f61;
             width: 0;
-            animation: typing 8s steps(80) 1s 1 normal both, blink 0.75s step-end infinite;
+            animation: typing 10s steps(100) 1s 1 normal both, blink 0.75s step-end infinite;
         }
         @keyframes typing {
             from {
@@ -44,36 +51,66 @@
             }
         }
         .open-letter {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             margin-top: 20px;
             color: #ff6f61;
             text-decoration: underline;
             cursor: pointer;
+            padding: 12px 24px;
+            background-color: transparent;
+            border: 2px solid #ff6f61;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .open-letter:hover {
+            background-color: #ff6f61;
+            color: white;
         }
         .message-reveal {
             display: none;
             font-size: 1.5rem;
             margin-top: 20px;
+            color: white;
+            opacity: 0;
+            transition: opacity 1s ease;
         }
         .do-you-love-btn {
             display: none;
             margin-top: 20px;
-            padding: 10px 20px;
+            padding: 12px 24px;
             background-color: #ff6f61;
             color: white;
             font-size: 1.2rem;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s ease;
         }
         .do-you-love-btn:hover {
             background-color: #d45d4c;
         }
+
+        /* Media Queries for mobile responsiveness */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem; /* Adjust the title size */
+            }
+            .message {
+                font-size: 1.2rem; /* Adjust message font size */
+            }
+            .open-letter, .do-you-love-btn {
+                font-size: 1.2rem; /* Adjust button sizes */
+                padding: 10px 20px;
+            }
+            .message-container {
+                width: 90%; /* Ensure the message container fits well */
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>
-    <div>
+    <div class="message-container">
         <h1>Hey, Special Someone!</h1>
         <p class="message">You know! Tum bahut pyaari si butki ho, main kal raat soya nahi tumhaari baatein soch kar, phir bore hone laga toh socha yeh bana du. You know, jab tumne pehla message kiya tha na, us waqt main woh website se bhi zyada khush ho gaya tha. Ahmm, aapke saath roz itna time spent ho jaata hai ki mere exams aa gaye aur mujhe samajh nahi aata ki main kya likh raha hoon, bas yeh kehna chahta hoon ki aap apna khayal rakhiye. Aur haan, jab aap mere se gussa hoti ho, mujhe samajh nahi aata kyun, par aap bohot cute lagti ho. Apna dhyaan rakhiye, okay? Take care ♥️</p>
         <p class="open-letter" onclick="openMessage()">Open the letter</p>
@@ -85,6 +122,7 @@
         function openMessage() {
             // Reveal the hidden message and button
             document.getElementById('messageReveal').style.display = 'block';
+            document.getElementById('messageReveal').style.opacity = 1; // Fade-in effect
             document.getElementById('loveButton').style.display = 'inline-block'; // Show the next button
         }
 
