@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Special Message ✨</title>
+    <title>Special Message 💕</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -15,131 +15,81 @@
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(-45deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
-            color: #333;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            text-align: center;
+            padding: 20px;
             position: relative;
-            overflow: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            z-index: 1;
+            overflow-x: hidden;
         }
 
         .container {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            max-width: 800px;
-            width: 90%;
+            max-width: 650px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
             padding: 40px 30px;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            border-radius: 30px;
-            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            animation: float 6s ease-in-out infinite;
+            box-shadow: 0 20px 60px rgba(255, 107, 107, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            position: relative;
+            z-index: 10;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+        .heart-top {
+            font-size: 4rem;
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            animation: heartbeat 1.5s ease-in-out infinite;
         }
 
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .heart-float {
-            position: absolute;
-            color: rgba(255, 107, 107, 0.6);
-            font-size: 20px;
-            animation: floatHeart 8s linear infinite;
-            pointer-events: none;
-        }
-
-        @keyframes floatHeart {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100px) rotate(360deg);
-                opacity: 0;
-            }
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
         h1 {
-            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-size: 2.2rem;
             font-weight: 700;
-            background: linear-gradient(45deg, #ff6b6b, #feca57, #48dbfb);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 30px;
-            text-shadow: 0 4px 20px rgba(255, 107, 107, 0.3);
+            color: #ff6b6b;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(255, 107, 107, 0.3);
         }
 
-        .main-message {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 40px;
-            border-radius: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        .message-box {
+            background: linear-gradient(135deg, #fff5f7 0%, #fce4ec 100%);
+            border: 2px solid #ffdee9;
+            border-radius: 20px;
+            padding: 30px;
+            margin: 25px 0;
+            min-height: 140px;
             position: relative;
-            overflow: hidden;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
         }
 
-        .main-message::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 107, 107, 0.1), transparent);
-            transform: rotate(45deg);
-            animation: shine 3s infinite;
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-        }
-
-        .message-text {
-            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
-            line-height: 1.8;
+        .typing-text {
+            font-size: 1.25rem;
+            line-height: 1.7;
             color: #444;
             font-weight: 400;
             min-height: 120px;
-            opacity: 0;
-            transform: translateY(30px);
+            white-space: pre-wrap;
         }
 
-        .typing-cursor {
+        .cursor {
             display: inline-block;
-            width: 2px;
-            height: 1.4rem;
-            background: linear-gradient(180deg, #ff6b6b, #feca57);
-            animation: blink 1s infinite;
-            margin-left: 2px;
+            background: #ff6b6b;
+            width: 3px;
+            height: 24px;
             vertical-align: middle;
+            margin-left: 2px;
+            animation: blink 0.8s infinite;
         }
 
         @keyframes blink {
@@ -147,54 +97,38 @@
             51%, 100% { opacity: 0; }
         }
 
-        .stage-1 { display: block; }
-        .stage-2, .stage-3 { display: none; }
+        .stage1 { display: block; }
+        .stage2, .stage3 { display: none; }
 
-        .btn-primary {
+        .open-btn {
             background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
             color: white;
             border: none;
-            padding: 18px 40px;
-            font-size: 1.2rem;
+            padding: 16px 35px;
+            font-size: 1.1rem;
             font-weight: 600;
-            border-radius: 50px;
+            border-radius: 30px;
             cursor: pointer;
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
             transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(255, 107, 107, 0.4);
-            position: relative;
-            overflow: hidden;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
+            margin-top: 20px;
         }
 
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            transition: left 0.5s;
+        .open-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(255, 107, 107, 0.6);
         }
 
-        .btn-primary:hover::before {
-            left: 100%;
+        .open-btn:active {
+            transform: translateY(0);
         }
 
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(255, 107, 107, 0.6);
-        }
-
-        .btn-primary:active {
-            transform: translateY(-1px);
-        }
-
-        .letter-envelope {
-            font-size: 4rem;
+        .envelope {
+            font-size: 3.5rem;
             color: #ff6b6b;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             animation: bounce 2s infinite;
         }
 
@@ -204,164 +138,234 @@
             60% { transform: translateY(-5px); }
         }
 
-        .hidden-content {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.8s ease;
-        }
-
-        .hidden-content.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .love-confession {
+        .final-section {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             padding: 30px;
             border-radius: 20px;
-            margin: 20px 0;
-            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.3);
+            margin-top: 20px;
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
         }
 
-        .whatsapp-btn {
+        .final-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .whatsapp-link {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             background: #25D366;
             color: white;
             text-decoration: none;
-            padding: 18px 40px;
-            border-radius: 50px;
+            padding: 16px 35px;
+            border-radius: 30px;
             font-weight: 600;
             font-size: 1.1rem;
+            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
             transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.4);
             margin-top: 20px;
         }
 
-        .whatsapp-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(37, 211, 102, 0.6);
+        .whatsapp-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(37, 211, 102, 0.6);
             color: white;
         }
 
-        @media (max-width: 768px) {
-            .container {
-                padding: 30px 20px;
-                margin: 20px;
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Floating hearts */
+        .floating-heart {
+            position: fixed;
+            font-size: 20px;
+            pointer-events: none;
+            z-index: 1;
+            animation: floatUp 6s linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0.7;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Mobile First */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
             }
             
-            .main-message {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+                border-radius: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .message-box {
                 padding: 25px 20px;
+                margin: 20px 0;
+            }
+            
+            .typing-text {
+                font-size: 1.1rem;
+            }
+            
+            .open-btn, .whatsapp-link {
+                padding: 14px 25px;
+                font-size: 1rem;
+            }
+            
+            .envelope {
+                font-size: 2.8rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Floating hearts -->
-    <div class="heart-float" style="left: 10%; animation-delay: 0s;">💖</div>
-    <div class="heart-float" style="left: 20%; animation-delay: 2s;">💕</div>
-    <div class="heart-float" style="left: 80%; animation-delay: 1s;">💗</div>
-    <div class="heart-float" style="left: 90%; animation-delay: 3s;">💝</div>
+    <!-- Floating Hearts Background -->
+    <div class="floating-heart" style="left: 10%; animation-delay: 0s;">💖</div>
+    <div class="floating-heart" style="left: 20%; animation-delay: 1s;">💕</div>
+    <div class="floating-heart" style="left: 80%; animation-delay: 2s;">💗</div>
+    <div class="floating-heart" style="left: 90%; animation-delay: 0.5s;">💝</div>
 
     <div class="container">
-        <div class="stage-1" id="stage1">
-            <h1><i class="fas fa-heart"></i> Hey Special Someone! <i class="fas fa-heart"></i></h1>
-            <div class="main-message">
-                <div class="message-text" id="typewriter"></div>
-                <span class="typing-cursor" id="cursor"></span>
+        <!-- Stage 1: Typing Message -->
+        <div class="stage1" id="stage1">
+            <div class="heart-top">
+                <i class="fas fa-heart"></i>
+            </div>
+            <h1>Hey Special Someone! 💕</h1>
+            <div class="message-box">
+                <div class="typing-text" id="messageText"></div>
+                <span class="cursor" id="cursor"></span>
             </div>
         </div>
 
-        <div class="stage-2" id="stage2">
-            <div class="letter-envelope">
+        <!-- Stage 2: Open Letter -->
+        <div class="stage2" id="stage2">
+            <div class="envelope">
                 <i class="fas fa-envelope-open-text"></i>
             </div>
-            <button class="btn-primary" onclick="nextStage()">
-                <i class="fas fa-play"></i> Open Special Letter
+            <h1>Special Message Inside!</h1>
+            <button class="open-btn" onclick="openLetter()">
+                <i class="fas fa-magic"></i> Open Letter ✨
             </button>
         </div>
 
-        <div class="stage-3" id="stage3">
-            <h1 style="color: white; background: none; -webkit-text-fill-color: white;">
-                Made with ❤️ just for you!
-            </h1>
-            <div class="love-confession hidden-content">
-                <h2 style="margin-bottom: 15px; font-size: 1.8rem;">
-                    <i class="fas fa-heart-pulse"></i> Do you love me too?
-                </h2>
-                <p style="font-size: 1.2rem; opacity: 0.9;">
+        <!-- Stage 3: Final Love Message -->
+        <div class="stage3" id="stage3">
+            <div class="heart-top">
+                <i class="fas fa-heart-pulse"></i>
+            </div>
+            <h1>Made with ❤️ Just For You!</h1>
+            <div class="final-section fade-in">
+                <h2>Do you love me too? 💖</h2>
+                <p style="font-size: 1.2rem; margin-bottom: 20px;">
                     I hope this made your day brighter! 😊✨
                 </p>
+                <a href="https://wa.me/91YOURPHONENUMBER" class="whatsapp-link" target="_blank">
+                    <i class="fab fa-whatsapp"></i> Yes, let's chat! 💬
+                </a>
             </div>
-            <a href="https://wa.me/1234567890" class="whatsapp-btn" target="_blank">
-                <i class="fab fa-whatsapp"></i> Yes, let's chat! 💬
-            </a>
         </div>
     </div>
 
     <script>
-        const message = `You know! Tum bahut pyaari si butki ho, main kal raat soya nahi tumhaari baatein soch kar, phir bore hone laga toh socha yeh bana du. You know, jab tumne pehla message kiya tha na, us waqt main woh website se bhi zyada khush ho gaya tha. Ahmm, aapke saath roz itna time spent ho jaata hai ki mere exams aa gaye aur mujhe samajh nahi aata ki main kya likh raha hoon, bas yeh kehna chahta hoon ki aap apna khayal rakhiye. Aur haan, jab aap mere se gussa hoti ho, mujhe samajh nahi aata kyun, par aap bohot cute lagti ho. Apna dhyaan rakhiye, okay? Take care ♥️`;
+        const fullMessage = `You know! Tum bahut pyaari si butki ho, main kal raat soya nahi tumhaari baatein soch kar, phir bore hone laga toh socha yeh bana du. You know, jab tumne pehla message kiya tha na, us waqt main woh website se bhi zyada khush ho gaya tha. Ahmm, aapke saath roz itna time spent ho jaata hai ki mere exams aa gaye aur mujhe samajh nahi aata ki main kya likh raha hoon, bas yeh kehna chahta hoon ki aap apna khayal rakhiye. Aur haan, jab aap mere se gussa hoti ho, mujhe samajh nahi aata kyun, par aap bohot cute lagti ho. Apna dhyaan rakhiye, okay? Take care ♥️`;
 
-        let i = 0;
-        const speed = 50;
+        let charIndex = 0;
+        const typingSpeed = 60;
 
-        function typeWriter() {
-            if (i < message.length) {
-                document.getElementById('typewriter').innerHTML += message.charAt(i);
-                i++;
-                setTimeout(typeWriter, speed);
+        function typeMessage() {
+            if (charIndex < fullMessage.length) {
+                document.getElementById('messageText').textContent += fullMessage.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeMessage, typingSpeed);
             } else {
+                // Hide cursor and show next stage after delay
                 document.getElementById('cursor').style.display = 'none';
                 setTimeout(() => {
-                    document.getElementById('stage1').style.display = 'none';
-                    document.getElementById('stage2').style.display = 'block';
-                    document.getElementById('stage2').style.opacity = '0';
-                    document.getElementById('stage2').style.transform = 'translateY(30px)';
-                    
-                    setTimeout(() => {
-                        document.getElementById('stage2').style.transition = 'all 0.8s ease';
-                        document.getElementById('stage2').style.opacity = '1';
-                        document.getElementById('stage2').style.transform = 'translateY(0)';
-                    }, 100);
+                    showStage2();
                 }, 2000);
             }
         }
 
-        function nextStage() {
-            document.getElementById('stage2').style.transition = 'all 0.8s ease';
+        function showStage2() {
+            document.getElementById('stage1').style.display = 'none';
+            document.getElementById('stage2').style.display = 'block';
             document.getElementById('stage2').style.opacity = '0';
-            document.getElementById('stage2').style.transform = 'translateY(30px)';
+            document.getElementById('stage2').style.transform = 'translateY(20px)';
+            
+            setTimeout(() => {
+                document.getElementById('stage2').style.transition = 'all 0.6s ease';
+                document.getElementById('stage2').style.opacity = '1';
+                document.getElementById('stage2').style.transform = 'translateY(0)';
+            }, 100);
+        }
+
+        function openLetter() {
+            document.getElementById('stage2').style.opacity = '0';
+            document.getElementById('stage2').style.transform = 'translateY(20px)';
             
             setTimeout(() => {
                 document.getElementById('stage2').style.display = 'none';
                 document.getElementById('stage3').style.display = 'block';
                 
-                const hiddenContent = document.querySelector('.hidden-content');
+                const fadeIn = document.querySelector('.fade-in');
                 setTimeout(() => {
-                    hiddenContent.classList.add('show');
-                }, 300);
-            }, 800);
+                    fadeIn.classList.add('show');
+                }, 200);
+            }, 600);
         }
 
-        // Start typing animation when page loads
-        window.onload = function() {
-            setTimeout(typeWriter, 1000);
-        };
+        // Start typing when page loads
+        window.addEventListener('load', () => {
+            setTimeout(typeMessage, 800);
+        });
 
-        // Create floating hearts periodically
-        setInterval(() => {
+        // Continuous floating hearts
+        function createHeart() {
             const heart = document.createElement('div');
-            heart.className = 'heart-float';
-            heart.innerHTML = ['💖', '💕', '💗', '💝'][Math.floor(Math.random() * 4)];
+            heart.className = 'floating-heart';
+            heart.innerHTML = ['💖','💕','💗','💝','💖'][Math.floor(Math.random()*5)];
             heart.style.left = Math.random() * 100 + '%';
-            heart.style.animationDuration = (8 + Math.random() * 4) + 's';
-            heart.style.animationDelay = Math.random() * 2 + 's';
+            heart.style.animationDuration = (5 + Math.random() * 3) + 's';
+            heart.style.fontSize = (16 + Math.random() * 12) + 'px';
             document.body.appendChild(heart);
             
-            setTimeout(() => heart.remove(), 12000);
-        }, 3000);
+            setTimeout(() => {
+                heart.remove();
+            }, 9000);
+        }
+
+        // Create hearts every 2 seconds
+        setInterval(createHeart, 2000);
     </script>
 </body>
 </html>
